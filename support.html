@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal 3 — Поддержка</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️ ПОДДЕРЖКА</h1>
+        <div class="sub">Ответы на частые вопросы и контакты</div>
+
+        <nav class="menu">
+            <a href="index.html">Главная</a>
+            <a href="download.html">Установка</a>
+            <a href="minecraft.html">Моды для Minecraft</a>
+            <a href="cheats.html">Чит-коды</a>
+            <a href="support.html" class="active">Поддержка</a>
+        </nav>
+
+        <section class="section">
+            <h2>Частые вопросы</h2>
+            <ul>
+                <li><strong>Как активировать режим разработчика?</strong> – 20 нажатий на версию игры в главном меню.</li>
+                <li><strong>Где найти мини-игры?</strong> – Они спрятаны по уровням, ищите трещины и слушайте подсказки Чел.</li>
+                <li><strong>Как играть по сети?</strong> – Создайте комнату в меню «Сетевая игра» и поделитесь ключом.</li>
+                <li><strong>Как установить мод в Minecraft?</strong> – Скачайте файл и поместите в папку mods.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>📬 Контакты</h2>
+            <p>Discord: <a href="https://discord.gg/JuJ6wXf9w">Техподдержка</a></p>
+            <p>Telegram: <a href="https://t.me/+EjX-micaonI5MWEy">Техподдержка</a></p>
+            <p>VK: <a href="https://vk.me/join/4hobsDVJwsnzzU/dhPd_9nw0YvJSI/DDk5U=">Присоединиться в VK</a></p>
+            <p>Email: <a href="mailto:gffrgogle.com@gmail.com">gffrgogle.com@gmail.com</a></p>
+        </section>
+
+        <!-- ФОРМА БЕЗ КАПЧИ -->
+        <section class="section">
+            <h2>✉️ Написать в поддержку</h2>
+            <form id="supportForm">
+                <label>Ваше имя:</label>
+                <input type="text" id="name" required>
+                <label>Ваш email:</label>
+                <input type="email" id="email" required>
+                <label>Сообщение:</label>
+                <textarea id="msg" rows="4" required></textarea>
+                <button type="submit" id="submitBtn" class="btn-game">Отправить</button>
+                <div id="formMessage"></div>
+            </form>
+        </section>
+
+        <footer class="footer">© 2026 — SWILL · Portal 3: Fan Edition</footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
