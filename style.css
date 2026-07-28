@@ -1,0 +1,291 @@
+/* ============================================================
+   ОСНОВНЫЕ СТИЛИ
+   ============================================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+body {
+    background: #0b0e14;
+    color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+.container {
+    max-width: 1100px;
+    width: 100%;
+    background: #141a24;
+    padding: 40px 30px;
+    border-radius: 40px;
+    border: 2px solid #f5a623;
+    box-shadow: 0 0 60px #f5a62333;
+}
+
+h1 {
+    font-size: 3rem;
+    color: #f5a623;
+    text-shadow: 0 0 30px #f5a62366;
+    text-align: center;
+    letter-spacing: 4px;
+}
+.sub {
+    color: #8af0ff;
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+/* ============================================================
+   МЕНЮ + ПОДСВЕТКА АКТИВНОЙ КНОПКИ
+   ============================================================ */
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin: 30px 0 25px 0;
+}
+.menu a {
+    background: #1f2a3a;
+    padding: 12px 28px;
+    border-radius: 60px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid #f5a62355;
+    transition: 0.25s;
+}
+.menu a:hover {
+    background: #f5a623;
+    color: #0b0e14;
+    transform: scale(1.04);
+    border-color: #f5a623;
+}
+.menu a.active {
+    background: #f5a623;
+    color: #0b0e14;
+    border-color: #f5a623;
+    box-shadow: 0 0 30px #f5a62366;
+}
+
+/* ============================================================
+   БЛОКИ
+   ============================================================ */
+.section {
+    background: #0f1620;
+    border-radius: 24px;
+    padding: 24px 28px;
+    margin: 35px 0;
+    border-left: 5px solid #f5a623;
+}
+.section h2 {
+    color: #8af0ff;
+    font-size: 1.6rem;
+    border-bottom: 2px solid #f5a62344;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+}
+.section ul {
+    list-style: none;
+    padding: 0;
+}
+.section ul li {
+    padding: 8px 0;
+    border-bottom: 1px solid #1f2a3a;
+}
+.section ul li::before {
+    content: "▹ ";
+    color: #f5a623;
+    font-weight: bold;
+}
+.section p {
+    line-height: 1.6;
+    margin: 8px 0;
+}
+.section a {
+    color: #8af0ff;
+    text-decoration: none;
+}
+.section a:hover {
+    text-decoration: underline;
+}
+
+/* ============================================================
+   КНОПКИ
+   ============================================================ */
+.btn-game {
+    display: inline-block;
+    background: #f5a623;
+    color: #0b0e14;
+    padding: 14px 36px;
+    border-radius: 60px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-decoration: none;
+    margin: 10px 10px 10px 0;
+    box-shadow: 0 0 30px #f5a62377;
+    transition: 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.btn-game:hover {
+    transform: scale(1.05);
+    background: #ffc107;
+}
+.btn-game.secondary {
+    background: #1f2a3a;
+    color: #fff;
+    box-shadow: none;
+}
+.btn-game.secondary:hover {
+    background: #2a3a4a;
+}
+
+/* ============================================================
+   ФОРМЫ
+   ============================================================ */
+#supportForm label {
+    display: block;
+    margin: 12px 0 4px;
+    color: #aaa;
+    font-weight: 300;
+}
+#supportForm input,
+#supportForm textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #f5a62355;
+    background: #1a1f2a;
+    color: #fff;
+    font-size: 1rem;
+}
+#supportForm button {
+    margin-top: 16px;
+}
+#formMessage {
+    margin-top: 15px;
+    font-weight: 600;
+    color: #8af0ff;
+}
+
+/* ============================================================
+   КАПЧА (оверлей)
+   ============================================================ */
+#captchaOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+    transition: opacity 0.5s ease;
+}
+#captchaOverlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+#captchaBox {
+    background: #141a24;
+    padding: 40px 30px;
+    border-radius: 24px;
+    border: 2px solid #f5a623;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 0 60px #f5a62333;
+}
+#captchaBox h2 {
+    color: #f5a623;
+    font-weight: 300;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+#captchaBox .question {
+    font-size: 1.8rem;
+    color: #8af0ff;
+    margin: 20px 0;
+    font-weight: bold;
+}
+#captchaBox input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #f5a62355;
+    background: #1a1f2a;
+    color: #fff;
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 15px;
+}
+#captchaBox input:focus {
+    border-color: #f5a623;
+    outline: none;
+}
+#captchaBox .btn-submit {
+    background: #f5a623;
+    color: #0b0e14;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 40px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+#captchaBox .btn-submit:hover {
+    background: #ffc107;
+    transform: scale(1.02);
+}
+#captchaBox .error {
+    color: #ff6666;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    min-height: 1.5em;
+}
+
+/* ============================================================
+   ПОДВАЛ
+   ============================================================ */
+.footer {
+    margin-top: 40px;
+    color: #666;
+    font-size: 0.9rem;
+    text-align: center;
+    border-top: 1px solid #1f2a3a;
+    padding-top: 25px;
+}
+.footer a {
+    color: #8af0ff;
+    text-decoration: none;
+}
+
+/* ============================================================
+   АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНОВ
+   ============================================================ */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2.2rem;
+    }
+    .btn-game {
+        font-size: 1rem;
+        padding: 12px 24px;
+    }
+    .menu a {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+    }
+    #captchaBox {
+        padding: 30px 20px;
+    }
+}
