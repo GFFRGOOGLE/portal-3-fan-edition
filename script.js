@@ -200,7 +200,97 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================================
-// 3. ФОРМА ОБРАТНОЙ СВЯЗИ (EmailJS — реальная отправка)
+// 3. КАПЧА ФОРМЫ (ПЕРЕД ОТПРАВКОЙ)
+// ============================================================
+const FormCaptcha = (function() {
+    const canvas = document.getElementById('formCaptchaCanvas');
+    const input = document.getElementById('formCaptchaInput');
+    const errorEl = document.getElementById('formCaptchaError');
+    if (!canvas || !input) return null;
+
+    const CFG = {
+        length: 5,
+        colors: { bg: '#1a1f2a', primary: '#f5a623', secondary: '#8af0ff' }
+    };
+
+    function gen() {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let r = '';
+        for (let i = 0; i < CFG.length; i++) r += chars[Math.floor(Math.random() * chars.length)];
+        return r;
+    }
+
+    function randCol(a) {
+        return (Math.random() > 0.5 ? CFG.colors.primary : CFG.colors.secondary) + a;
+    }
+
+    function draw(text) {
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width, h = canvas.height;
+        ctx.fillStyle = CFG.colors.bg;
+        ctx.fillRect(0, 0, w, h);
+
+        for (let i = 0; i < 80; i++) {
+            ctx.fillStyle = randCol('33');
+            ctx.beginPath();
+            ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        for (let i = 0; i < 4; i++) {
+            ctx.strokeStyle = randCol('44');
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(Math.random() * w, Math.random() * h);
+            ctx.lineTo(Math.random() * w, Math.random() * h);
+            ctx.stroke();
+        }
+
+        const spacing = 30;
+        const startX = (w - text.length * spacing) / 2 + 15;
+        text.split('').forEach((ch, i) => {
+            ctx.save();
+            ctx.translate(startX + i * spacing + (Math.random() - 0.5) * 6, h / 2 + (Math.random() - 0.5) * 8);
+            ctx.rotate((Math.random() - 0.5) * 0.5);
+            ctx.font = `bold 28px "Courier New", monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = randCol('ff');
+            ctx.fillText(ch, 0, 0);
+            ctx.restore();
+        });
+    }
+
+    let current = gen();
+    draw(current);
+
+    function refresh() {
+        current = gen();
+        draw(current);
+        input.value = '';
+        errorEl.textContent = '';
+    }
+
+    canvas.addEventListener('click', refresh);
+    input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        errorEl.textContent = '⚠️ Вставка запрещена';
+    });
+
+    return {
+        verify: function() {
+            if (input.value.trim() !== current) {
+                errorEl.textContent = '❌ Неверный код проверки';
+                refresh();
+                return false;
+            }
+            errorEl.textContent = '';
+            return true;
+        }
+    };
+})();
+
+// ============================================================
+// 4. ФОРМА ОБРАТНОЙ СВЯЗИ (EmailJS)
 // ============================================================
 
 const EMAILJS_CONFIG = {
@@ -225,6 +315,12 @@ if (supportForm) {
         const btn = document.getElementById('submitBtn');
         const formMessage = document.getElementById('formMessage');
 
+        // Проверка капчи формы
+        if (FormCaptcha && !FormCaptcha.verify()) {
+            formMessage.textContent = '';
+            return;
+        }
+
         if (typeof emailjs === 'undefined') {
             formMessage.textContent = '❌ Сервис временно недоступен. Обновите страницу.';
             formMessage.style.color = '#ff6666';
@@ -246,6 +342,7 @@ if (supportForm) {
                 formMessage.textContent = '✅ Сообщение отправлено! Мы ответим вам на почту.';
                 formMessage.style.color = '#44ddff';
                 supportForm.reset();
+                if (FormCaptcha) FormCaptcha.refresh && FormCaptcha.refresh();
             })
             .catch((err) => {
                 formMessage.textContent = '❌ Ошибка отправки. Попробуйте позже.';
