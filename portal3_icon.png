@@ -1,0 +1,100 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#141a24"/>
+      <stop offset="100%" stop-color="#0b0e14"/>
+    </radialGradient>
+    <linearGradient id="orange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffc107"/>
+      <stop offset="100%" stop-color="#f5a623"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a8f5ff"/>
+      <stop offset="100%" stop-color="#8af0ff"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#55efc4"/>
+      <stop offset="50%" stop-color="#00b894"/>
+      <stop offset="100%" stop-color="#00d26a"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="80" fill="url(#bg)"/>
+  <rect x="8" y="8" width="496" height="496" rx="72" fill="none" stroke="url(#orange)" stroke-width="3" opacity="0.7"/>
+  <rect x="8" y="8" width="496" height="496" rx="72" fill="none" stroke="#f5a623" stroke-width="1" opacity="0.25" filter="url(#glow)"/>
+  <g opacity="0.05" stroke="#8af0ff" stroke-width="1">
+    <line x1="0" y1="128" x2="512" y2="128"/>
+    <line x1="0" y1="256" x2="512" y2="256"/>
+    <line x1="0" y1="384" x2="512" y2="384"/>
+    <line x1="128" y1="0" x2="128" y2="512"/>
+    <line x1="256" y1="0" x2="256" y2="512"/>
+    <line x1="384" y1="0" x2="384" y2="512"/>
+  </g>
+  <g transform="translate(256, 145)">
+    <ellipse cx="0" cy="0" rx="48" ry="68" fill="none" stroke="url(#green)" stroke-width="6" filter="url(#glow)"/>
+    <ellipse cx="0" cy="0" rx="35" ry="52" fill="#081a10" opacity="0.85"/>
+    <ellipse cx="0" cy="0" rx="20" ry="32" fill="none" stroke="#55efc4" stroke-width="2" opacity="0.35"/>
+    <ellipse cx="0" cy="0" rx="12" ry="18" fill="#00d26a" opacity="0.12"/>
+  </g>
+  <g transform="translate(165, 255)">
+    <ellipse cx="0" cy="0" rx="48" ry="68" fill="none" stroke="url(#orange)" stroke-width="6" filter="url(#glow)" transform="rotate(-10)"/>
+    <ellipse cx="0" cy="0" rx="35" ry="52" fill="#1a1208" opacity="0.85" transform="rotate(-10)"/>
+    <g transform="rotate(10) translate(0, 5)" opacity="0.35">
+      <ellipse cx="0" cy="14" rx="14" ry="4" fill="#555"/>
+      <path d="M-11,2 L-11,12 Q0,17 11,12 L11,2 Q0,7 -11,2Z" fill="#d4a373"/>
+      <ellipse cx="0" cy="2" rx="11" ry="4" fill="#e9c46a"/>
+      <path d="M-11,2 Q-8,-1 -5,2 Q-2,-1 0,2 Q2,-1 5,2 Q8,-1 11,2" fill="none" stroke="#f4a261" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="0" cy="-4" r="3" fill="#e63946"/>
+      <path d="M0,-7 Q2,-10 4,-8" fill="none" stroke="#2a9d8f" stroke-width="1"/>
+    </g>
+    <ellipse cx="0" cy="0" rx="20" ry="32" fill="none" stroke="#ffc107" stroke-width="2" opacity="0.35" transform="rotate(-10)"/>
+    <ellipse cx="0" cy="0" rx="12" ry="18" fill="#f5a623" opacity="0.12" transform="rotate(-10)"/>
+  </g>
+  <g transform="translate(347, 255)">
+    <ellipse cx="0" cy="0" rx="48" ry="68" fill="none" stroke="url(#blue)" stroke-width="6" filter="url(#glow)" transform="rotate(10)"/>
+    <ellipse cx="0" cy="0" rx="35" ry="52" fill="#08141a" opacity="0.85" transform="rotate(10)"/>
+    <g transform="rotate(-10) translate(0, 8)" opacity="0.35">
+      <ellipse cx="0" cy="2" rx="10" ry="13" fill="#c4a35a"/>
+      <ellipse cx="-3" cy="-1" rx="2.5" ry="3" fill="#fff" opacity="0.9"/>
+      <ellipse cx="3" cy="-1" rx="2.5" ry="3" fill="#fff" opacity="0.9"/>
+      <circle cx="-3" cy="-1" r="1.2" fill="#ff6b6b"/>
+      <circle cx="3" cy="-1" r="1.2" fill="#ff6b6b"/>
+      <path d="M-3,5 Q0,7 3,5" fill="none" stroke="#8b7355" stroke-width="1" stroke-linecap="round"/>
+      <path d="M-5,-10 Q-8,-16 -4,-18" fill="none" stroke="#666" stroke-width="0.8"/>
+      <path d="M5,-10 Q8,-16 4,-18" fill="none" stroke="#666" stroke-width="0.8"/>
+      <ellipse cx="-3" cy="6" rx="3" ry="2" fill="#e8d5a3" opacity="0.4"/>
+    </g>
+    <ellipse cx="0" cy="0" rx="20" ry="32" fill="none" stroke="#a8f5ff" stroke-width="2" opacity="0.35" transform="rotate(10)"/>
+    <ellipse cx="0" cy="0" rx="12" ry="18" fill="#8af0ff" opacity="0.12" transform="rotate(10)"/>
+  </g>
+  <text x="256" y="310" text-anchor="middle" font-family="DejaVu Serif" font-size="90" font-weight="bold" fill="#f5a623" filter="url(#glow)">3</text>
+  <text x="256" y="350" text-anchor="middle" font-family="DejaVu Sans" font-size="15" font-weight="bold" fill="#8af0ff" opacity="0.9">FAN EDITION</text>
+  <g stroke="#f5a623" stroke-width="2" fill="none" opacity="0.4">
+    <path d="M32,32 L32,52 L52,52"/>
+    <path d="M480,32 L480,52 L460,52"/>
+    <path d="M32,480 L32,460 L52,460"/>
+    <path d="M480,480 L480,460 L460,460"/>
+  </g>
+  <g fill="#8af0ff" opacity="0.25">
+    <circle cx="80" cy="100" r="2"/>
+    <circle cx="430" cy="130" r="2"/>
+    <circle cx="120" cy="380" r="1.5"/>
+    <circle cx="400" cy="360" r="2"/>
+  </g>
+  <g fill="#f5a623" opacity="0.2">
+    <circle cx="60" cy="140" r="1.5"/>
+    <circle cx="450" cy="170" r="2"/>
+  </g>
+  <g fill="#00d26a" opacity="0.2">
+    <circle cx="256" cy="80" r="2"/>
+    <circle cx="220" cy="90" r="1.5"/>
+    <circle cx="292" cy="90" r="1.5"/>
+  </g>
+</svg>
