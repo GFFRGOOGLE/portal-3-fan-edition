@@ -36,6 +36,21 @@
             transition: 0.2s;
         }
         .tawk-banner button:hover { background: #ffcc66; transform: scale(1.03); }
+        
+        .captcha-refresh {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid #f5a62355;
+            background: #0d1117;
+            color: #f5a623;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .captcha-refresh:hover {
+            background: #f5a623;
+            color: #000;
+        }
     </style>
 </head>
 <body>
@@ -52,9 +67,7 @@
             <a href="chat.html">Чат</a>
         </nav>
 
-        <!-- ═══════════════════════════════════════ -->
-        <!-- ЧАТ ПОДДЕРЖКИ (Tawk.to) -->
-        <!-- ═══════════════════════════════════════ -->
+        <!-- TAWK.TO ЧАТ -->
         <section class="section">
             <div class="tawk-banner">
                 <h3>💬 Онлайн-чат с поддержкой</h3>
@@ -93,12 +106,13 @@
                 <label>Сообщение:</label>
                 <textarea id="msg" rows="4" required></textarea>
 
-                <!-- КАПЧА ФОРМЫ -->
+                <!-- КАПЧА -->
                 <div class="form-captcha" style="margin: 15px 0;">
                     <label>Проверка:</label>
                     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                         <canvas id="formCaptchaCanvas" width="200" height="60" style="border-radius:8px; border:1px solid #f5a62355; background:#1a1f2a; cursor:pointer;" title="Нажмите, чтобы обновить"></canvas>
-                        <input type="text" id="formCaptchaInput" placeholder="Введите код" maxlength="5" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="flex:1; min-width:120px; padding:10px; border-radius:8px; border:1px solid #f5a62355; background:#141a24; color:#fff; text-align:center; font-family:'Courier New',monospace; font-size:1.1rem;" required>
+                        <input type="text" id="formCaptchaInput" placeholder="Введите код" maxlength="5" autocomplete="off" style="flex:1; min-width:120px; padding:10px; border-radius:8px; border:1px solid #f5a62355; background:#141a24; color:#fff; text-align:center; font-family:'Courier New',monospace; font-size:1.1rem;" required>
+                        <button type="button" class="captcha-refresh" onclick="generateCaptcha()" title="Обновить код">🔄 Обновить</button>
                     </div>
                     <div id="formCaptchaError" style="color:#ff6666; font-size:0.85rem; margin-top:5px; min-height:1.2em;"></div>
                 </div>
@@ -113,20 +127,83 @@
 
     <script src="script.js"></script>
 
-    <!-- ═══════════════════════════════════════ -->
-    <!-- TAWK.TO — ВСТАВЬ СВОЙ ID НИЖЕ -->
-    <!-- ═══════════════════════════════════════ -->
+    <!-- TAWK.TO -->
     <script type="text/javascript">
     var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
     (function(){
     var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
     s1.async=true;
-    // ЗАМЕНИ 'ВАШ_ID' и 'ВАШ_КЛЮЧ' на данные из Tawk.to
-    s1.src='https://embed.tawk.to/ВАШ_ID/ВАШ_КЛЮЧ';
+    s1.src='https://embed.tawk.to/6a771804d3a3461d4fad9e0f/1b89411df00814370641b2e0ae2623d04cd522ddc';
     s1.charset='UTF-8';
     s1.setAttribute('crossorigin','*');
     s0.parentNode.insertBefore(s1,s0);
     })();
+    </script>
+    
+    <!-- Капча -->
+    <script>
+        let currentCaptcha = '';
+        
+        function generateCaptcha() {
+            const canvas = document.getElementById('formCaptchaCanvas');
+            const ctx = canvas.getContext('2d');
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            
+            ctx.fillStyle = '#1a1f2a';
+            ctx.fillRect(0, 0, 200, 60);
+            
+            for (let i = 0; i < 5; i++) {
+                code += chars[Math.floor(Math.random() * chars.length)];
+            }
+            currentCaptcha = code;
+            
+            for (let i = 0; i < 8; i++) {
+                ctx.strokeStyle = `rgba(245, 166, 35, ${Math.random() * 0.3})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * 200, Math.random() * 60);
+                ctx.lineTo(Math.random() * 200, Math.random() * 60);
+                ctx.stroke();
+            }
+            
+            for (let i = 0; i < 5; i++) {
+                ctx.save();
+                ctx.font = `bold ${28 + Math.random() * 8}px Courier New`;
+                ctx.fillStyle = `hsl(${30 + Math.random() * 30}, 80%, 60%)`;
+                ctx.translate(30 + i * 35, 38 + Math.random() * 10);
+                ctx.rotate((Math.random() - 0.5) * 0.4);
+                ctx.fillText(code[i], 0, 0);
+                ctx.restore();
+            }
+            
+            for (let i = 0; i < 50; i++) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.2})`;
+                ctx.fillRect(Math.random() * 200, Math.random() * 60, 2, 2);
+            }
+        }
+        
+        generateCaptcha();
+        
+        document.getElementById('formCaptchaCanvas').addEventListener('click', generateCaptcha);
+        
+        document.getElementById('supportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('formCaptchaInput').value.toUpperCase();
+            const errorDiv = document.getElementById('formCaptchaError');
+            
+            if (input !== currentCaptcha) {
+                errorDiv.textContent = 'Неверный код. Попробуйте ещё раз.';
+                generateCaptcha();
+                document.getElementById('formCaptchaInput').value = '';
+                return;
+            }
+            
+            errorDiv.textContent = '';
+            alert('Сообщение отправлено! Мы ответим вам на email.');
+            this.reset();
+            generateCaptcha();
+        });
     </script>
 </body>
 </html>
