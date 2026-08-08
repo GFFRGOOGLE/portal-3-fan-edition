@@ -5,6 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal 3 — Поддержка</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .tawk-banner {
+            background: #1a2233;
+            border: 1px solid #f5a62355;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .tawk-banner h3 {
+            color: #f5a623;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        .tawk-banner p {
+            color: #aab;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+        .tawk-banner button {
+            padding: 14px 32px;
+            border-radius: 12px;
+            border: none;
+            background: #f5a623;
+            color: #000;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .tawk-banner button:hover { background: #ffcc66; transform: scale(1.03); }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -17,7 +49,19 @@
             <a href="minecraft.html">Моды для Minecraft</a>
             <a href="cheats.html">Чит-коды</a>
             <a href="support.html" class="active">Поддержка</a>
+            <a href="chat.html">Чат</a>
         </nav>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- ЧАТ ПОДДЕРЖКИ (Tawk.to) -->
+        <!-- ═══════════════════════════════════════ -->
+        <section class="section">
+            <div class="tawk-banner">
+                <h3>💬 Онлайн-чат с поддержкой</h3>
+                <p>Нужна помощь? Напиши нам прямо здесь — мы ответим как можно скорее!</p>
+                <button onclick="Tawk_API.maximize()">Открыть чат поддержки</button>
+            </div>
+        </section>
 
         <section class="section">
             <h2>Частые вопросы</h2>
@@ -68,5 +112,21 @@
     </div>
 
     <script src="script.js"></script>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- TAWK.TO — ВСТАВЬ СВОЙ ID НИЖЕ -->
+    <!-- ═══════════════════════════════════════ -->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    // ЗАМЕНИ 'ВАШ_ID' и 'ВАШ_КЛЮЧ' на данные из Tawk.to
+    s1.src='https://embed.tawk.to/ВАШ_ID/ВАШ_КЛЮЧ';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
 </body>
 </html>
