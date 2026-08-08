@@ -36,6 +36,7 @@
             transition: 0.2s;
         }
         .tawk-banner button:hover { background: #ffcc66; transform: scale(1.03); }
+        .tawk-banner button:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .captcha-refresh {
             padding: 8px 14px;
@@ -51,6 +52,18 @@
             background: #f5a623;
             color: #000;
         }
+        .fallback-chat {
+            display: none;
+            background: #1a2233;
+            border: 1px solid #ff444455;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+            text-align: center;
+            color: #aab;
+            font-size: 0.9rem;
+        }
+        .fallback-chat a { color: #f5a623; }
     </style>
 </head>
 <body>
@@ -67,12 +80,15 @@
             <a href="chat.html">Чат</a>
         </nav>
 
-        <!-- TAWK.TO ЧАТ -->
         <section class="section">
             <div class="tawk-banner">
                 <h3>💬 Онлайн-чат с поддержкой</h3>
                 <p>Нужна помощь? Напиши нам прямо здесь — мы ответим как можно скорее!</p>
                 <button onclick="openTawkChat()" id="tawkBtn">Открыть чат поддержки</button>
+                <div class="fallback-chat" id="fallbackChat">
+                    ⚠️ Чат не удалось загрузить. Возможно, его блокирует AdBlock.<br>
+                    Напишите нам на <a href="mailto:portal3.fanedition.support@gmail.com">portal3.fanedition.support@gmail.com</a>
+                </div>
             </div>
         </section>
 
@@ -106,7 +122,6 @@
                 <label>Сообщение:</label>
                 <textarea id="msg" rows="4" required></textarea>
 
-                <!-- КАПЧА -->
                 <div class="form-captcha" style="margin: 15px 0;">
                     <label>Проверка:</label>
                     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -130,8 +145,16 @@
     <!-- TAWK.TO -->
     <script type="text/javascript">
     var Tawk_API = Tawk_API || {};
+    var Tawk_LoadStart = new Date();
+    
     Tawk_API.onLoad = function() {
         console.log('Tawk.to загружен');
+        document.getElementById('tawkBtn').disabled = false;
+    };
+    
+    Tawk_API.onError = function(error) {
+        console.error('Tawk.to ошибка:', error);
+        document.getElementById('fallbackChat').style.display = 'block';
     };
     
     (function(){
@@ -149,12 +172,13 @@
             Tawk_API.maximize();
         } else {
             alert('Чат загружается... Подождите пару секунд и попробуйте снова.');
-            // Повторная попытка через 2 секунды
             setTimeout(function() {
                 if (typeof Tawk_API !== 'undefined' && Tawk_API.maximize) {
                     Tawk_API.maximize();
+                } else {
+                    document.getElementById('fallbackChat').style.display = 'block';
                 }
-            }, 2000);
+            }, 3000);
         }
     }
     </script>
