@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal 3 — Общий чат</title>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -287,9 +287,11 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.92);
             z-index: 9999;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             padding: 20px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .auth-modal.active { display: flex; }
         .auth-panel {
@@ -299,8 +301,8 @@
             padding: 24px;
             width: 100%;
             max-width: 380px;
-            max-height: 92vh;
-            overflow-y: auto;
+            margin: auto;
+            box-sizing: border-box;
         }
         .auth-panel h2 {
             color: #f5a623;
@@ -327,6 +329,7 @@
             cursor: pointer;
             transition: 0.2s;
             text-align: center;
+            box-sizing: border-box;
         }
         .auth-btn:hover { background: #f5a623; color: #000; }
         .auth-divider {
@@ -356,6 +359,7 @@
             color: #000;
             font-weight: bold;
             cursor: pointer;
+            font-size: 0.95rem;
         }
         .auth-error { color: #ff4444; font-size: 0.8rem; margin: 4px 0; min-height: 1.2em; }
         .close-modal {
@@ -431,6 +435,7 @@
         .phone-step { display: none; }
         .phone-step.active { display: block; }
         
+        /* Captcha box with refresh button */
         .captcha-box {
             background: #0d1117;
             border: 1px solid #f5a62355;
@@ -439,12 +444,38 @@
             margin: 12px 0;
             text-align: center;
         }
+        .captcha-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
         .captcha-box canvas {
             border-radius: 6px;
             background: #1a1f2a;
             cursor: pointer;
             display: block;
-            margin: 0 auto 8px;
+        }
+        .captcha-refresh-btn {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid #f5a62355;
+            background: #0d1117;
+            color: #f5a623;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .captcha-            font-size: 0.85rem;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .captcha-refresh-btn:hover {
+            background: #f5a623;
+            color: #000;
         }
         .captcha-box input {
             width: 100%;
@@ -467,6 +498,7 @@
             display: block;
             text-align: center;
             margin: 12px 0 8px;
+            padding: 8px;
         }
         
         @media (max-width: 600px) {
@@ -475,6 +507,9 @@
             .msg-delete { opacity: 1; }
             .msg-actions { opacity: 1; }
             .msg-reply-text { max-width: 150px; }
+            .auth-modal { padding: 10px; }
+            .auth-panel { padding: 16px; }
+            .captcha-row { flex-direction: column; }
         }
     </style>
 </head>
@@ -699,7 +734,10 @@
                 <h2>🔐 Вход в чат</h2>
                 <p>Выберите способ входа</p>
                 <div class="captcha-box">
-                    <canvas id="modalCaptchaCanvas" width="200" height="60" onclick="generateModalCaptcha()"></canvas>
+                    <div class="captcha-row">
+                        <canvas id="modalCaptchaCanvas" width="200" height="60" onclick="generateModalCaptcha()"></canvas>
+                        <button type="button" class="captcha-refresh-btn" onclick="generateModalCaptcha()">🔄 Обновить</button>
+                    </div>
                     <input type="text" id="modalCaptchaInput" placeholder="Введите код" maxlength="5">
                     <div class="auth-error" id="modalCaptchaError"></div>
                 </div>
@@ -725,8 +763,8 @@
                     </div>
                     <div class="auth-error" id="phoneError"></div>
                 </div>
-                <span class="reg-link" onclick="showRegForm()">Регистрация</span>
-                <span class="close-modal" onclick="closeAuth()">← Закрыть</span>
+                <div class="reg-link" onclick="showRegForm()">Регистрация</div>
+                <div class="close-modal" onclick="closeAuth()">← Закрыть</div>
             `;
             setTimeout(generateModalCaptcha, 50);
         }
@@ -736,7 +774,10 @@
                 <h2>📝 Регистрация</h2>
                 <p>Создайте аккаунт</p>
                 <div class="captcha-box">
-                    <canvas id="modalCaptchaCanvas" width="200" height="60" onclick="generateModalCaptcha()"></canvas>
+                    <div class="captcha-row">
+                        <canvas id="modalCaptchaCanvas" width="200" height="60" onclick="generateModalCaptcha()"></canvas>
+                        <button type="button" class="captcha-refresh-btn" onclick="generateModalCaptcha()">🔄 Обновить</button>
+                    </div>
                     <input type="text" id="modalCaptchaInput" placeholder="Введите код" maxlength="5">
                     <div class="auth-error" id="modalCaptchaError"></div>
                 </div>
@@ -748,8 +789,8 @@
                     <div class="auth-error" id="regError"></div>
                     <button onclick="tryRegister()">Зарегистрироваться</button>
                 </div>
-                <span class="reg-link" onclick="showLoginForm()">Уже есть аккаунт? Войти</span>
-                <span class="close-modal" onclick="closeAuth()">← Закрыть</span>
+                <div class="reg-link" onclick="showLoginForm()">Уже есть аккаунт? Войти</div>
+                <div class="close-modal" onclick="closeAuth()">← Закрыть</div>
             `;
             setTimeout(generateModalCaptcha, 50);
         }
