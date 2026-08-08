@@ -72,7 +72,7 @@
             <div class="tawk-banner">
                 <h3>💬 Онлайн-чат с поддержкой</h3>
                 <p>Нужна помощь? Напиши нам прямо здесь — мы ответим как можно скорее!</p>
-                <button onclick="Tawk_API.maximize()">Открыть чат поддержки</button>
+                <button onclick="openTawkChat()" id="tawkBtn">Открыть чат поддержки</button>
             </div>
         </section>
 
@@ -129,15 +129,34 @@
 
     <!-- TAWK.TO -->
     <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    var Tawk_API = Tawk_API || {};
+    Tawk_API.onLoad = function() {
+        console.log('Tawk.to загружен');
+    };
+    
     (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/6a771804d3a3461d4fad9e0f/1b89411df00814370641b2e0ae2623d04cd522ddc';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
+        var s1 = document.createElement("script");
+        var s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/6a771804d3a3461d4fad9e0f/1b89411df00814370641b2e0ae2623d04cd522ddc';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin', '*');
+        s0.parentNode.insertBefore(s1, s0);
     })();
+    
+    function openTawkChat() {
+        if (typeof Tawk_API !== 'undefined' && Tawk_API.maximize) {
+            Tawk_API.maximize();
+        } else {
+            alert('Чат загружается... Подождите пару секунд и попробуйте снова.');
+            // Повторная попытка через 2 секунды
+            setTimeout(function() {
+                if (typeof Tawk_API !== 'undefined' && Tawk_API.maximize) {
+                    Tawk_API.maximize();
+                }
+            }, 2000);
+        }
+    }
     </script>
     
     <!-- Капча -->
