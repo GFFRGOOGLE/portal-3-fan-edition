@@ -6,10 +6,7 @@
     <title>Portal 3 — Общий чат</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .chat-wrap {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        .chat-wrap { max-width: 800px; margin: 0 auto; }
         .chat-box {
             background: #141a24;
             border: 1px solid #f5a62355;
@@ -118,9 +115,7 @@
             opacity: 0;
             transition: 0.2s;
         }
-        .msg:hover .msg-delete {
-            opacity: 1;
-        }
+        .msg:hover .msg-delete { opacity: 1; }
         
         .chat-bottom {
             border-top: 1px solid #f5a62333;
@@ -143,20 +138,24 @@
             outline: none;
         }
         .chat-input-row input:focus { border-color: #f5a623; }
-        .chat-input-row button {
-            padding: 12px 20px;
-            border-radius: 12px;
+        
+        /* Paper plane send button */
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
             border: none;
             background: #f5a623;
             color: #000;
-            font-weight: bold;
-            font-size: 1.1rem;
             cursor: pointer;
             transition: 0.2s;
-            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
-        .chat-input-row button:hover { background: #ffcc66; }
-        .chat-input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .send-btn:hover { background: #ffcc66; transform: scale(1.05); }
+        .send-btn svg { width: 20px; height: 20px; }
         
         .guest-bar {
             display: flex;
@@ -169,9 +168,7 @@
             margin-bottom: 12px;
             font-size: 0.95rem;
         }
-        .guest-bar span {
-            color: #aab;
-        }
+        .guest-bar span { color: #aab; }
         .login-btn {
             padding: 8px 16px;
             border-radius: 8px;
@@ -182,10 +179,7 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .login-btn:hover {
-            background: #f5a623;
-            color: #000;
-        }
+        .login-btn:hover { background: #f5a623; color: #000; }
         
         .rules-box {
             background: #1a2233;
@@ -198,23 +192,18 @@
         }
         .rules-box strong { color: #f5a623; }
         
-        /* ====== AUTH MODAL ====== */
+        /* Auth Modal */
         .auth-modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
             z-index: 9999;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
-        .auth-modal.active {
-            display: flex;
-        }
+        .auth-modal.active { display: flex; }
         .auth-panel {
             background: #1a2233;
             border: 2px solid #f5a623;
@@ -222,7 +211,7 @@
             padding: 24px;
             width: 100%;
             max-width: 380px;
-            max-height: 90vh;
+            max-height: 92vh;
             overflow-y: auto;
         }
         .auth-panel h2 {
@@ -251,10 +240,7 @@
             transition: 0.2s;
             text-align: center;
         }
-        .auth-btn:hover {
-            background: #f5a623;
-            color: #000;
-        }
+        .auth-btn:hover { background: #f5a623; color: #000; }
         .auth-divider {
             color: #667;
             text-align: center;
@@ -292,13 +278,13 @@
             display: block;
             text-align: center;
             color: #667;
-            margin-top: 12px;
+            margin-top: 16px;
             cursor: pointer;
             font-size: 0.9rem;
+            padding: 8px;
         }
-        .close-modal:hover {
-            color: #f5a623;
-        }
+        .close-modal:hover { color: #f5a623; }
+        
         .user-bar {
             display: none;
             align-items: center;
@@ -310,10 +296,7 @@
             margin-bottom: 12px;
             font-size: 0.95rem;
         }
-        .user-bar span {
-            color: #f5a623;
-            font-weight: bold;
-        }
+        .user-bar span { color: #f5a623; font-weight: bold; }
         .logout-btn {
             padding: 8px 16px;
             border-radius: 8px;
@@ -323,10 +306,20 @@
             font-size: 0.85rem;
             cursor: pointer;
         }
-        .logout-btn:hover {
+        .logout-btn:hover { background: #ff4444; color: #fff; }
+        
+        /* Admin badge */
+        .admin-badge {
             background: #ff4444;
             color: #fff;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            text-transform: none;
+            letter-spacing: 0.5px;
         }
+        
         .admin-panel {
             display: none;
             background: #1a1111;
@@ -336,15 +329,79 @@
             margin-bottom: 12px;
             font-size: 0.9rem;
         }
-        .admin-panel.active {
-            display: block;
-        }
+        .admin-panel.active { display: block; }
         .admin-panel h3 {
             color: #ff4444;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-size: 1rem;
         }
+        .admin-stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .admin-stats span { color: #f5a623; }
+        .admin-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .admin-actions button {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #ff4444;
+            background: transparent;
+            color: #ff4444;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .admin-actions button:hover {
+            background: #ff4444;
+            color: #fff;
+        }
+        
         .phone-step { display: none; }
         .phone-step.active { display: block; }
+        
+        /* Captcha in modal */
+        .captcha-box {
+            background: #0d1117;
+            border: 1px solid #f5a62355;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 12px 0;
+            text-align: center;
+        }
+        .captcha-box canvas {
+            border-radius: 6px;
+            background: #1a1f2a;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto 8px;
+        }
+        .captcha-box input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #f5a62355;
+            background: #141a24;
+            color: #fff;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .reg-link {
+            color: #f5a623;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9rem;
+            display: block;
+            text-align: center;
+            margin: 12px 0 8px;
+        }
         
         @media (max-width: 600px) {
             .chat-box { height: 420px; }
@@ -375,7 +432,14 @@
             <!-- Admin panel -->
             <div class="admin-panel" id="adminPanel">
                 <h3>🛡️ Админ-панель</h3>
-                <div>Сообщений: <span id="msgCount">0</span> | Пользователей: <span id="userCount">0</span></div>
+                <div class="admin-stats">
+                    <div>Сообщений: <span id="msgCount">0</span></div>
+                    <div>Пользователей: <span id="userCount">0</span></div>
+                </div>
+                <div class="admin-actions">
+                    <button onclick="clearAllMessages()">🗑 Очистить чат</button>
+                    <button onclick="banUserPrompt()">⛔ Забанить</button>
+                </div>
             </div>
 
             <!-- User bar -->
@@ -403,12 +467,12 @@
                 </div>
                 
                 <div class="chat-bottom">
-                    <!-- Input for logged users -->
                     <div class="chat-input-row" id="inputRow">
                         <input type="text" id="msgInput" placeholder="Напиши сообщение..." maxlength="300" onkeypress="if(event.key==='Enter')sendMsg()">
-                        <button onclick="sendMsg()">➤ Отправить</button>
+                        <button class="send-btn" onclick="sendMsg()" title="Отправить">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                        </button>
                     </div>
-                    <!-- Guest hint -->
                     <div id="guestHint" style="text-align:center;">
                         <button class="login-btn" onclick="openAuth()" style="padding:10px 20px; font-size:1rem;">Войдите, чтобы писать сообщения</button>
                     </div>
@@ -421,46 +485,16 @@
 
     <!-- Auth Modal -->
     <div class="auth-modal" id="authModal">
-        <div class="auth-panel">
-            <h2>🔐 Вход в чат</h2>
-            <p>Выберите способ входа</p>
-            
-            <button class="auth-btn" onclick="signInGoogle()">🔵 Войти через Google</button>
-            <button class="auth-btn" onclick="signInGitHub()">⚫ Войти через GitHub</button>
-            
-            <div class="auth-divider">— или —</div>
-            
-            <div class="auth-form">
-                <input type="email" id="emailInput" placeholder="Email">
-                <input type="password" id="passInput" placeholder="Пароль">
-                <div class="auth-error" id="emailError"></div>
-                <button onclick="signInEmail()">Войти / Регистрация</button>
-            </div>
-            
-            <div class="auth-divider">— или —</div>
-            
-            <div class="auth-form">
-                <div id="phoneStep1" class="phone-step active">
-                    <input type="tel" id="phoneInput" placeholder="+7 999 123 45 67">
-                    <div id="recaptcha-container"></div>
-                    <button onclick="sendPhoneCode()">Получить код SMS</button>
-                </div>
-                <div id="phoneStep2" class="phone-step">
-                    <input type="text" id="phoneCodeInput" placeholder="Код из SMS">
-                    <button onclick="confirmPhoneCode()">Подтвердить</button>
-                </div>
-                <div class="auth-error" id="phoneError"></div>
-            </div>
-            
-            <span class="close-modal" onclick="closeAuth()">← Закрыть</span>
+        <div class="auth-panel" id="authPanelContent">
+            <!-- Dynamic content -->
         </div>
     </div>
 
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded, query, limitToLast, serverTimestamp, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPhoneNumber, RecaptchaVerifier, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getDatabase, ref, push, onChildAdded, onChildRemoved, query, limitToLast, serverTimestamp, remove, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPhoneNumber, RecaptchaVerifier, updateProfile, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBpCgLs7DAah48TDe8h_198JGMRWcfePoI",
@@ -477,39 +511,72 @@
         const auth = getAuth(app);
         const messagesRef = query(ref(db, 'portal-chat'), limitToLast(80));
 
-        const ADMIN_EMAILS = ['gffrgogle.com@gmail.com', 'portal3.fanedition.support@gmail.com'];
+        // Admin config
+        const ADMIN_EMAILS = [
+            'gffrgogle.com@gmail.com',
+            'portal3.fanedition.support@gmail.com'
+        ];
+        const ADMIN_PHONES = ['+79605326310'];
+        
+        function checkIsAdmin(user) {
+            if (!user) return false;
+            if (ADMIN_EMAILS.includes(user.email)) return true;
+            if (ADMIN_PHONES.includes(user.phoneNumber)) return true;
+            // Check GitHub provider
+            const providers = user.providerData || [];
+            for (const p of providers) {
+                if (p.providerId === 'github.com') return true;
+            }
+            return false;
+        }
 
         // DOM
         const authModal = document.getElementById('authModal');
+        const authPanelContent = document.getElementById('authPanelContent');
         const userBar = document.getElementById('userBar');
         const guestBar = document.getElementById('guestBar');
         const guestHint = document.getElementById('guestHint');
         const inputRow = document.getElementById('inputRow');
-        const userName = document.getElementById('userName');
+        const userNameEl = document.getElementById('userName');
         const chatMsgs = document.getElementById('chatMsgs');
         const adminPanel = document.getElementById('adminPanel');
-        const emailError = document.getElementById('emailError');
-        const phoneError = document.getElementById('phoneError');
-
         let isAdmin = false;
+        let myUsername = '';
         let unsubMessages = null;
+        const msgElements = {};
 
         // Auth state
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                isAdmin = ADMIN_EMAILS.includes(user.email);
+                isAdmin = checkIsAdmin(user);
+                
+                // Get custom username
+                const userSnap = await get(ref(db, 'users/' + user.uid));
+                if (userSnap.exists()) {
+                    myUsername = userSnap.val().name || user.displayName || 'Пользователь';
+                } else {
+                    myUsername = user.displayName || user.email || user.phoneNumber || 'Пользователь';
+                    await set(ref(db, 'users/' + user.uid), { name: myUsername, email: user.email, phone: user.phoneNumber });
+                }
+                
                 userBar.style.display = 'flex';
                 guestBar.style.display = 'none';
                 guestHint.style.display = 'none';
                 inputRow.style.display = 'flex';
-                userName.textContent = (user.displayName || user.email || user.phoneNumber || 'Пользователь') + (isAdmin ? ' [АДМИН]' : '');
+                
+                const adminTag = isAdmin ? ' <span class="admin-badge">Админ</span>' : '';
+                userNameEl.innerHTML = escapeHtml(myUsername) + adminTag;
+                
                 if (isAdmin) {
                     adminPanel.classList.add('active');
                     updateAdminStats();
+                } else {
+                    adminPanel.classList.remove('active');
                 }
                 closeAuth();
             } else {
                 isAdmin = false;
+                myUsername = '';
                 userBar.style.display = 'none';
                 guestBar.style.display = 'flex';
                 guestHint.style.display = 'block';
@@ -518,56 +585,219 @@
             }
         });
 
-        // Modal functions
+        // ========== MODAL & CAPTCHA ==========
+        let currentCaptcha = '';
+        let captchaPassed = false;
+        
+        function generateModalCaptcha() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            currentCaptcha = code;
+            
+            const canvas = document.getElementById('modalCaptchaCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#1a1f2a';
+            ctx.fillRect(0, 0, 200, 60);
+            
+            for (let i = 0; i < 8; i++) {
+                ctx.strokeStyle = `rgba(245,166,35,${Math.random()*0.3})`;
+                ctx.beginPath();
+                ctx.moveTo(Math.random()*200, Math.random()*60);
+                ctx.lineTo(Math.random()*200, Math.random()*60);
+                ctx.stroke();
+            }
+            for (let i = 0; i < 5; i++) {
+                ctx.save();
+                ctx.font = `bold ${26+Math.random()*8}px Courier New`;
+                ctx.fillStyle = `hsl(${30+Math.random()*30},80%,60%)`;
+                ctx.translate(30+i*32, 40+Math.random()*6);
+                ctx.rotate((Math.random()-0.5)*0.4);
+                ctx.fillText(code[i], 0, 0);
+                ctx.restore();
+            }
+        }
+
+        function checkModalCaptcha() {
+            const input = document.getElementById('modalCaptchaInput');
+            const err = document.getElementById('modalCaptchaError');
+            if (!input || !err) return false;
+            if (input.value.toUpperCase() !== currentCaptcha) {
+                err.textContent = 'Неверный код';
+                generateModalCaptcha();
+                input.value = '';
+                return false;
+            }
+            err.textContent = '';
+            return true;
+        }
+
         window.openAuth = () => {
+            captchaPassed = false;
             authModal.style.display = 'flex';
             authModal.classList.add('active');
+            showLoginForm();
         };
         window.closeAuth = () => {
             authModal.style.display = 'none';
             authModal.classList.remove('active');
         };
 
-        // Auth providers
+        function showLoginForm() {
+            authPanelContent.innerHTML = `
+                <h2>🔐 Вход в чат</h2>
+                <p>Выберите способ входа</p>
+                
+                <div class="captcha-box">
+                    <canvas id="modalCaptchaCanvas" width="200" height="60" onclick="generateModalCaptcha()"></canvas>
+                    <input type="text" id="modalCaptchaInput" placeholder="Введите код" maxlength="5">
+                    <div class="auth-error" id="modalCaptchaError"></div>
+                </div>
+                
+                <button class="auth-btn" onclick="trySocial(signInGoogle)">🔵 Войти через Google</button>
+                <button class="auth-btn" onclick="trySocial(signInGitHub)">⚫ Войти через GitHub</button>
+                
+                <div class="auth-divider">— или —</div>
+                
+                <div class="auth-form">
+                    <input type="email" id="emailInput" placeholder="Email">
+                    <input type="password" id="passInput" placeholder="Пароль">
+                    <div class="auth-error" id="emailError"></div>
+                    <button onclick="tryEmail(signInEmail)">Войти</button>
+                </div>
+                
+                <div class="auth-divider">— или —</div>
+                
+                <div class="auth-form">
+                    <div id="phoneStep1" class="phone-step active">
+                        <input type="tel" id="phoneInput" placeholder="+7 999 123 45 67">
+                        <div id="recaptcha-container"></div>
+                        <button onclick="tryPhoneSend()">Получить код SMS</button>
+                    </div>
+                    <div id="phoneStep2" class="phone-step">
+                        <input type="text" id="phoneCodeInput" placeholder="Код из SMS">
+                        <button onclick="tryPhoneConfirm()">Подтвердить</button>
+                    </div>
+                    <div class="auth-error" id="phoneError"></div>
+                </div>
+                
+                <span class="reg-link" onclick="showRegForm()">Регистрация</span>
+                <span class="close-modal" onclick="closeAuth()">← Закрыть</span>
+            `;
+            setTimeout(generateModalCaptcha, 50);
+        }
+
+        function showRegForm() {
+            authPanelContent.innerHTML = `
+                <h2>📝 Регистрация</h2>
+                <p>Создайте аккаунт</p>
+                
+                <div class="captcha-box">
+                    <canvas id="modalCaptchaCanvas" width="200" height="60" onclick="generateModalCaptcha()"></canvas>
+                    <input type="text" id="modalCaptchaInput" placeholder="Введите код" maxlength="5">
+                    <div class="auth-error" id="modalCaptchaError"></div>
+                </div>
+                
+                <div class="auth-form">
+                    <input type="text" id="regNameInput" placeholder="Имя пользователя (уникальное)">
+                    <input type="email" id="regEmailInput" placeholder="Email">
+                    <input type="password" id="regPassInput" placeholder="Пароль (мин. 6 символов)">
+                    <div class="auth-error" id="regError"></div>
+                    <button onclick="tryRegister()">Зарегистрироваться</button>
+                </div>
+                
+                <span class="reg-link" onclick="showLoginForm()">Уже есть аккаунт? Войти</span>
+                <span class="close-modal" onclick="closeAuth()">← Закрыть</span>
+            `;
+            setTimeout(generateModalCaptcha, 50);
+        }
+
+        window.trySocial = (fn) => { if (checkModalCaptcha()) fn(); };
+        window.tryEmail = (fn) => { if (checkModalCaptcha()) fn(); };
+        window.tryPhoneSend = () => { if (checkModalCaptcha()) sendPhoneCode(); };
+        window.tryPhoneConfirm = () => { if (checkModalCaptcha()) confirmPhoneCode(); };
+        window.tryRegister = () => { if (checkModalCaptcha()) registerUser(); };
+        window.generateModalCaptcha = generateModalCaptcha;
+
+        // ========== AUTH ACTIONS ==========
         window.signInGoogle = () => {
-            signInWithPopup(auth, new GoogleAuthProvider()).catch(err => alert('Ошибка: ' + err.message));
+            signInWithPopup(auth, new GoogleAuthProvider()).catch(err => alert('Ошибка Google: ' + err.message));
         };
         window.signInGitHub = () => {
-            signInWithPopup(auth, new GithubAuthProvider()).catch(err => alert('Ошибка: ' + err.message));
+            signInWithPopup(auth, new GithubAuthProvider()).catch(err => alert('Ошибка GitHub: ' + err.message));
         };
         window.signInEmail = () => {
             const email = document.getElementById('emailInput').value.trim();
             const pass = document.getElementById('passInput').value;
-            emailError.textContent = '';
-            if (!email || !pass) { emailError.textContent = 'Введите email и пароль'; return; }
-            if (pass.length < 6) { emailError.textContent = 'Пароль минимум 6 символов'; return; }
-            signInWithEmailAndPassword(auth, email, pass)
-                .catch(() => createUserWithEmailAndPassword(auth, email, pass))
-                .catch(err => { emailError.textContent = err.message; });
+            const err = document.getElementById('emailError');
+            err.textContent = '';
+            if (!email || !pass) { err.textContent = 'Введите email и пароль'; return; }
+            signInWithEmailAndPassword(auth, email, pass).catch(e => { err.textContent = e.message; });
         };
+
+        async function registerUser() {
+            const name = document.getElementById('regNameInput').value.trim();
+            const email = document.getElementById('regEmailInput').value.trim();
+            const pass = document.getElementById('regPassInput').value;
+            const err = document.getElementById('regError');
+            err.textContent = '';
+            
+            if (!name || !email || !pass) { err.textContent = 'Заполните все поля'; return; }
+            if (pass.length < 6) { err.textContent = 'Пароль минимум 6 символов'; return; }
+            if (name.length < 2 || name.length > 20) { err.textContent = 'Имя: 2-20 символов'; return; }
+            
+            // Check unique name
+            const namesSnap = await get(ref(db, 'usernames/' + name.toLowerCase()));
+            if (namesSnap.exists()) { err.textContent = 'Это имя уже занято'; return; }
+            
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                await set(ref(db, 'users/' + cred.user.uid), { name: name, email: email });
+                await set(ref(db, 'usernames/' + name.toLowerCase()), cred.user.uid);
+                await updateProfile(cred.user, { displayName: name });
+            } catch (e) {
+                err.textContent = e.message;
+            }
+        }
+        window.registerUser = registerUser;
 
         // Phone
         let confirmationResult = null;
         const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
+        
         window.sendPhoneCode = () => {
             const phone = document.getElementById('phoneInput').value.trim();
-            phoneError.textContent = '';
-            if (!phone || phone.length < 10) { phoneError.textContent = 'Введите номер'; return; }
+            const err = document.getElementById('phoneError');
+            err.textContent = '';
+            if (!phone || phone.length < 10) { err.textContent = 'Введите номер'; return; }
             signInWithPhoneNumber(auth, phone, recaptchaVerifier)
                 .then(r => { confirmationResult = r; document.getElementById('phoneStep1').classList.remove('active'); document.getElementById('phoneStep2').classList.add('active'); alert('Код отправлен!'); })
-                .catch(err => { phoneError.textContent = err.message; });
+                .catch(e => { err.textContent = e.message; });
         };
         window.confirmPhoneCode = () => {
             const code = document.getElementById('phoneCodeInput').value.trim();
-            phoneError.textContent = '';
-            if (!code) { phoneError.textContent = 'Введите код'; return; }
-            confirmationResult.confirm(code).catch(err => { phoneError.textContent = err.message; });
+            const err = document.getElementById('phoneError');
+            err.textContent = '';
+            if (!code) { err.textContent = 'Введите код'; return; }
+            confirmationResult.confirm(code).catch(e => { err.textContent = e.message; });
         };
 
         window.logout = () => { signOut(auth); };
+
+        // ========== ADMIN ACTIONS ==========
         window.deleteMessage = (key) => {
             if (!isAdmin) return;
             if (confirm('Удалить сообщение?')) remove(ref(db, 'portal-chat/' + key));
+        };
+        window.clearAllMessages = () => {
+            if (!isAdmin) return;
+            if (confirm('Очистить ВЕСЬ чат?')) remove(ref(db, 'portal-chat'));
+        };
+        window.banUserPrompt = () => {
+            if (!isAdmin) return;
+            const uid = prompt('Введите UID пользователя для бана:');
+            if (uid) set(ref(db, 'banned/' + uid), true);
         };
 
         function updateAdminStats() {
@@ -580,13 +810,18 @@
             }, { onlyOnce: true });
         }
 
-        // Messages
+        // ========== CHAT ==========
+        async function getUserName(uid) {
+            const snap = await get(ref(db, 'users/' + uid + '/name'));
+            return snap.exists() ? snap.val() : null;
+        }
+
         function loadMessages() {
             if (unsubMessages) return;
             let firstLoad = true;
             chatMsgs.innerHTML = '<div class="chat-empty">Загрузка сообщений...</div>';
             
-            unsubMessages = onChildAdded(messagesRef, (snapshot) => {
+            unsubMessages = onChildAdded(messagesRef, async (snapshot) => {
                 const msg = snapshot.val();
                 const key = snapshot.key;
                 if (!msg) return;
@@ -595,13 +830,33 @@
                 const isOwn = auth.currentUser && msg.uid === auth.currentUser.uid;
                 const div = document.createElement('div');
                 div.className = 'msg ' + (isOwn ? 'msg-own' : 'msg-other');
+                div.id = 'msg-' + key;
+                msgElements[key] = div;
                 
-                let html = '<div class="msg-name">' + escapeHtml(msg.name || 'Аноним') + '<span class="msg-time">' + formatTime(msg.time) + '</span></div>' + escapeHtml(msg.text);
+                // Get username
+                let displayName = msg.name || 'Аноним';
+                const customName = await getUserName(msg.uid);
+                if (customName) displayName = customName;
+                
+                const isMsgAdmin = msg.isAdmin || false;
+                const adminTag = isMsgAdmin ? '<span class="admin-badge">Админ</span>' : '';
+                
+                let html = '<div class="msg-name">' + escapeHtml(displayName) + adminTag + '<span class="msg-time">' + formatTime(msg.time) + '</span></div>' + escapeHtml(msg.text);
                 if (isAdmin) html += '<button class="msg-delete" onclick="deleteMessage(\'' + key + '\')">✕</button>';
                 
                 div.innerHTML = html;
                 chatMsgs.appendChild(div);
                 chatMsgs.scrollTop = chatMsgs.scrollHeight;
+            });
+            
+            // Remove deleted messages instantly
+            onChildRemoved(ref(db, 'portal-chat'), (snapshot) => {
+                const key = snapshot.key;
+                const el = document.getElementById('msg-' + key);
+                if (el) el.remove();
+                if (chatMsgs.children.length === 0) {
+                    chatMsgs.innerHTML = '<div class="chat-empty">Пока нет сообщений. Будь первым! 🎮</div>';
+                }
             });
 
             setTimeout(() => {
@@ -616,12 +871,14 @@
             if (!text) return;
             if (!auth.currentUser) { openAuth(); return; }
             if (text.length > 300) { alert('Слишком длинное'); return; }
+            
             const user = auth.currentUser;
             push(ref(db, 'portal-chat'), {
                 uid: user.uid,
-                name: user.displayName || user.email || user.phoneNumber || 'Пользователь',
+                name: myUsername,
                 text: text,
-                time: serverTimestamp()
+                time: serverTimestamp(),
+                isAdmin: isAdmin
             });
             document.getElementById('msgInput').value = '';
         };
