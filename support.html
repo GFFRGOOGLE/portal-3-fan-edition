@@ -6,7 +6,7 @@
     <title>Portal 3 — Поддержка</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .tawk-banner {
+        .chat-banner {
             background: #1a2233;
             border: 1px solid #f5a62355;
             border-radius: 16px;
@@ -14,17 +14,17 @@
             text-align: center;
             margin-bottom: 24px;
         }
-        .tawk-banner h3 {
+        .chat-banner h3 {
             color: #f5a623;
             margin-bottom: 10px;
             font-size: 1.3rem;
         }
-        .tawk-banner p {
+        .chat-banner p {
             color: #aab;
             margin-bottom: 16px;
             font-size: 0.95rem;
         }
-        .tawk-banner button {
+        .chat-banner button {
             padding: 14px 32px;
             border-radius: 12px;
             border: none;
@@ -35,8 +35,79 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .tawk-banner button:hover { background: #ffcc66; transform: scale(1.03); }
-        .tawk-banner button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .chat-banner button:hover { background: #ffcc66; transform: scale(1.03); }
+        .chat-banner button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Встроенный чат */
+        .support-chat-box {
+            display: none;
+            background: #141a24;
+            border: 1px solid #f5a62355;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-top: 16px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        .support-chat-box.active { display: flex; }
+        .support-chat-header {
+            background: #f5a623;
+            color: #000;
+            padding: 12px 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .support-chat-header button {
+            background: none;
+            border: none;
+            color: #000;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .support-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .support-chat-input-row {
+            display: flex;
+            gap: 10px;
+            padding: 12px 16px;
+            border-top: 1px solid #f5a62333;
+            background: #1a2233;
+        }
+        .support-chat-input-row input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #f5a62355;
+            background: #0d1117;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .support-chat-input-row input:focus { border-color: #f5a623; }
+        .support-chat-input-row button {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            background: #f5a623;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .chat-msg { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; }
+        .chat-msg.user { align-self: flex-end; background: #f5a623; color: #000; border-bottom-right-radius: 4px; }
+        .chat-msg.support { align-self: flex-start; background: #1e2636; color: #e0e6f0; border: 1px solid #2a3548; border-bottom-left-radius: 4px; }
+        .chat-msg-time { font-size: 0.7rem; opacity: 0.6; margin-top: 4px; }
         
         .captcha-refresh {
             padding: 8px 14px;
@@ -64,6 +135,29 @@
             font-size: 0.9rem;
         }
         .fallback-chat a { color: #f5a623; }
+        
+        .contact-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .contact-card {
+            background: #1a2233;
+            border: 1px solid #f5a62333;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .contact-card:hover { border-color: #f5a623; transform: translateY(-2px); }
+        .contact-card a {
+            color: #f5a623;
+            text-decoration: none;
+            font-weight: bold;
+            display: block;
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
@@ -81,13 +175,32 @@
         </nav>
 
         <section class="section">
-            <div class="tawk-banner">
+            <div class="chat-banner">
                 <h3>💬 Онлайн-чат с поддержкой</h3>
                 <p>Нужна помощь? Напиши нам прямо здесь — мы ответим как можно скорее!</p>
-                <button onclick="openTawkChat()" id="tawkBtn">Открыть чат поддержки</button>
+                <button onclick="openSupportChat()" id="chatBtn">Открыть чат поддержки</button>
+                
+                <!-- Встроенный чат -->
+                <div class="support-chat-box" id="supportChatBox">
+                    <div class="support-chat-header">
+                        <span>💬 Чат с поддержкой Portal 3</span>
+                        <button onclick="closeSupportChat()" title="Закрыть">✕</button>
+                    </div>
+                    <div class="support-chat-messages" id="chatMessages">
+                        <div class="chat-msg support">
+                            👋 Привет! Чем могу помочь? Опишите вашу проблему, и мы ответим вам на email.
+                            <div class="chat-msg-time">Сейчас</div>
+                        </div>
+                    </div>
+                    <div class="support-chat-input-row">
+                        <input type="text" id="chatInput" placeholder="Напишите сообщение..." maxlength="500" onkeypress="if(event.key==='Enter')sendSupportMessage()">
+                        <button onclick="sendSupportMessage()">Отправить</button>
+                    </div>
+                </div>
+                
                 <div class="fallback-chat" id="fallbackChat">
-                    ⚠️ Чат не удалось загрузить. Возможно, его блокирует AdBlock.<br>
-                    Напишите нам на <a href="mailto:portal3.fanedition.support@gmail.com">portal3.fanedition.support@gmail.com</a>
+                    ⚠️ Если чат не работает, напишите нам напрямую:<br>
+                    <a href="mailto:portal3.fanedition.support@gmail.com">portal3.fanedition.support@gmail.com</a>
                 </div>
             </div>
         </section>
@@ -104,10 +217,24 @@
 
         <section class="section">
             <h2>📬 Контакты</h2>
-            <p>Discord: <a href="https://discord.gg/JuJ6wXf9w">Техподдержка</a></p>
-            <p>Telegram: <a href="https://t.me/+EjX-micaonI5MWEy">Техподдержка</a></p>
-            <p>VK: <a href="https://vk.me/join/4hobsDVJwsnzzU/dhPd_9nw0YvJSI/DDk5U=">Присоединиться в VK</a></p>
-            <p>Email: <a href="mailto:portal3.fanedition.support@gmail.com">portal3.fanedition.support@gmail.com</a></p>
+            <div class="contact-cards">
+                <div class="contact-card">
+                    💬 Discord<br>
+                    <a href="https://discord.gg/JuJ6wXf9w" target="_blank">Техподдержка</a>
+                </div>
+                <div class="contact-card">
+                    ✈️ Telegram<br>
+                    <a href="https://t.me/+EjX-micaonI5MWEy" target="_blank">Техподдержка</a>
+                </div>
+                <div class="contact-card">
+                    📱 VK<br>
+                    <a href="https://vk.me/join/4hobsDVJwsnzzU/dhPd_9nw0YvJSI/DDk5U=" target="_blank">Присоединиться</a>
+                </div>
+                <div class="contact-card">
+                    ✉️ Email<br>
+                    <a href="mailto:portal3.fanedition.support@gmail.com">Написать письмо</a>
+                </div>
+            </div>
         </section>
 
         <section class="section">
@@ -142,50 +269,10 @@
 
     <script src="script.js"></script>
 
-    <!-- TAWK.TO -->
-    <script type="text/javascript">
-    var Tawk_API = Tawk_API || {};
-    var Tawk_LoadStart = new Date();
-    
-    Tawk_API.onLoad = function() {
-        console.log('Tawk.to загружен');
-        document.getElementById('tawkBtn').disabled = false;
-    };
-    
-    Tawk_API.onError = function(error) {
-        console.error('Tawk.to ошибка:', error);
-        document.getElementById('fallbackChat').style.display = 'block';
-    };
-    
-    (function(){
-        var s1 = document.createElement("script");
-        var s0 = document.getElementsByTagName("script")[0];
-        s1.async = true;
-        s1.src = 'https://embed.tawk.to/6a771804d3a3461d4fad9e0f/1b89411df00814370641b2e0ae2623d04cd522ddc';
-        s1.charset = 'UTF-8';
-        s1.setAttribute('crossorigin', '*');
-        s0.parentNode.insertBefore(s1, s0);
-    })();
-    
-    function openTawkChat() {
-        if (typeof Tawk_API !== 'undefined' && Tawk_API.maximize) {
-            Tawk_API.maximize();
-        } else {
-            alert('Чат загружается... Подождите пару секунд и попробуйте снова.');
-            setTimeout(function() {
-                if (typeof Tawk_API !== 'undefined' && Tawk_API.maximize) {
-                    Tawk_API.maximize();
-                } else {
-                    document.getElementById('fallbackChat').style.display = 'block';
-                }
-            }, 3000);
-        }
-    }
-    </script>
-    
-    <!-- Капча -->
+    <!-- Встроенный чат поддержки -->
     <script>
         let currentCaptcha = '';
+        let chatHistory = [];
         
         function generateCaptcha() {
             const canvas = document.getElementById('formCaptchaCanvas');
@@ -243,10 +330,94 @@
             }
             
             errorDiv.textContent = '';
-            alert('Сообщение отправлено! Мы ответим вам на email.');
+            
+            // Собираем данные формы
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const msg = document.getElementById('msg').value.trim();
+            
+            // Отправляем через mailto (откроет почтовый клиент)
+            const subject = encodeURIComponent('Обращение в поддержку Portal 3 от ' + name);
+            const body = encodeURIComponent('Имя: ' + name + '\nEmail: ' + email + '\n\nСообщение:\n' + msg);
+            window.location.href = 'mailto:portal3.fanedition.support@gmail.com?subject=' + subject + '&body=' + body;
+            
+            alert('Открываем почтовый клиент... Если он не открылся, скопируйте данные и отправьте вручную на portal3.fanedition.support@gmail.com');
             this.reset();
             generateCaptcha();
         });
+        
+        // ===== ВСТРОЕННЫЙ ЧАТ =====
+        function openSupportChat() {
+            const box = document.getElementById('supportChatBox');
+            box.classList.add('active');
+            document.getElementById('chatBtn').style.display = 'none';
+            document.getElementById('chatInput').focus();
+            
+            // Показываем подсказку, если чат пустой
+            const msgs = document.getElementById('chatMessages');
+            if (msgs.children.length === 0) {
+                addMessage('support', '👋 Привет! Чем могу помочь? Опишите вашу проблему, и мы ответим вам на email.');
+            }
+        }
+        
+        function closeSupportChat() {
+            document.getElementById('supportChatBox').classList.remove('active');
+            document.getElementById('chatBtn').style.display = 'inline-block';
+        }
+        
+        function addMessage(type, text) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-msg ' + type;
+            const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            div.innerHTML = escapeHtml(text) + '<div class="chat-msg-time">' + time + '</div>';
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            
+            // Сохраняем в историю
+            chatHistory.push({ type, text, time });
+        }
+        
+        function sendSupportMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            // Добавляем сообщение пользователя
+            addMessage('user', text);
+            input.value = '';
+            
+            // Имитируем "печатает..."
+            setTimeout(() => {
+                // Автоответы на частые вопросы
+                const lower = text.toLowerCase();
+                let reply = '';
+                
+                if (lower.includes('установ') || lower.includes('скачать') || lower.includes('download')) {
+                    reply = '📥 Скачать игру можно на странице «Установка». Там есть пошаговая инструкция!';
+                } else if (lower.includes('чит') || lower.includes('код') || lower.includes('чит-код')) {
+                    reply = '🎮 Все чит-коды есть на странице «Чит-коды». Для активации режима разработчика — 20 нажатий на версию в главном меню.';
+                } else if (lower.includes('майнкрафт') || lower.includes('minecraft') || lower.includes('мод')) {
+                    reply = '⛏ Моды для Minecraft доступны на странице «Моды для Minecraft». Скачайте файл и поместите в папку mods.';
+                } else if (lower.includes('сеть') || lower.includes('онлайн') || lower.includes('мультиплеер')) {
+                    reply = '🌐 Создайте комнату в меню «Сетевая игра» и поделитесь ключом с друзьями.';
+                } else if (lower.includes('баг') || lower.includes('ошибка') || lower.includes('не работает') || lower.includes('проблема')) {
+                    reply = '🐛 Опишите проблему подробнее — мы передадим разработчикам. Также можете заполнить форму ниже или написать на portal3.fanedition.support@gmail.com';
+                } else if (lower.includes('привет') || lower.includes('здравствуй')) {
+                    reply = '👋 Привет! Чем могу помочь?';
+                } else {
+                    reply = '✅ Сообщение получено! Мы ответим вам в ближайшее время. Для срочных вопросов пишите на portal3.fanedition.support@gmail.com или в Discord.';
+                }
+                
+                addMessage('support', reply);
+            }, 800 + Math.random() * 1000);
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
     </script>
 </body>
 </html>
