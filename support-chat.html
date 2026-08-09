@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>💬 Чат с поддержкой — Portal 3</title>
-    <link rel="stylesheet" href="style.css">
     <style>
         * { box-sizing: border-box; }
         body {
@@ -48,6 +47,7 @@
             color: #000;
             font-size: 1.2rem;
             cursor: pointer;
+            text-decoration: none;
         }
         .dialogs-list {
             flex: 1;
@@ -162,7 +162,6 @@
             color: #000;
             font-size: 1.3rem;
             cursor: pointer;
-            padding: 4px;
             text-decoration: none;
         }
         .support-header .status {
@@ -352,6 +351,143 @@
             font-size: 1rem;
         }
 
+        /* Auth Modal */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .auth-modal.active { display: flex; }
+        .auth-panel {
+            background: #1a2233;
+            border: 2px solid #f5a623;
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 380px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+        .auth-panel h2 {
+            color: #f5a623;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 1.3rem;
+        }
+        .auth-btn {
+            display: block;
+            width: 100%;
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #f5a62355;
+            background: #0d1117;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .auth-btn:hover { background: #f5a623; color: #000; }
+        .auth-divider {
+            color: #667;
+            text-align: center;
+            margin: 12px 0;
+            font-size: 0.85rem;
+        }
+        .auth-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 4px 0;
+            border-radius: 8px;
+            border: 1px solid #f5a62355;
+            background: #0d1117;
+            color: #fff;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+        .auth-form button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 8px;
+            border: none;
+            background: #f5a623;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .auth-error { color: #ff4444; font-size: 0.8rem; margin: 4px 0; min-height: 1.2em; }
+        .close-modal {
+            display: block;
+            text-align: center;
+            color: #667;
+            margin-top: 16px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 8px;
+        }
+        .close-modal:hover { color: #f5a623; }
+        .reg-link {
+            color: #f5a623;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9rem;
+            display: block;
+            text-align: center;
+            margin: 12px 0 8px;
+            padding: 8px;
+        }
+
+        /* Loading / Error states */
+        .loading-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #f5a623;
+            font-size: 1.1rem;
+        }
+        .loading-screen .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f5a62333;
+            border-top-color: #f5a623;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+        .error-screen.active { display: flex; }
+        .error-screen h2 { color: #ff4444; margin-bottom: 12px; }
+        .error-screen p { color: #aab; margin-bottom: 20px; }
+        .error-screen a {
+            color: #f5a623;
+            text-decoration: none;
+            padding: 12px 24px;
+            border: 1px solid #f5a623;
+            border-radius: 8px;
+        }
+
         @media (max-width: 768px) {
             .dialogs-sidebar { 
                 width: 100%; 
@@ -361,10 +497,25 @@
             }
             .dialogs-sidebar.hidden { display: none; }
             .admin-chat-area { width: 100%; }
+            .support-header h2 { font-size: 1rem; }
+            .msg-row { max-width: 92%; }
         }
     </style>
 </head>
 <body>
+    <!-- Loading screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="spinner"></div>
+        <div>Загрузка чата...</div>
+    </div>
+
+    <!-- Error screen -->
+    <div class="error-screen" id="errorScreen">
+        <h2>⚠️ Ошибка загрузки</h2>
+        <p id="errorText">Не удалось загрузить чат. Проверьте подключение к интернету.</p>
+        <a href="support.html">← Вернуться назад</a>
+    </div>
+
     <!-- ===== ADMIN LAYOUT ===== -->
     <div class="admin-layout" id="adminLayout">
         <div class="dialogs-sidebar" id="dialogsSidebar">
@@ -438,473 +589,514 @@
     </div>
 
     <!-- Auth Modal -->
-    <div class="auth-modal" id="authModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:9999; align-items:flex-start; justify-content:center; padding:20px; overflow-y:auto;">
-        <div class="auth-panel" id="authPanelContent" style="background:#1a2233; border:2px solid #f5a623; border-radius:16px; padding:24px; width:100%; max-width:380px; margin:auto;"></div>
+    <div class="auth-modal" id="authModal">
+        <div class="auth-panel" id="authPanelContent"></div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded, onValue, serverTimestamp, get, set, onChildChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signOut, signInWithPhoneNumber, RecaptchaVerifier } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    <!-- Firebase Scripts (global, not module) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBpCgLs7DAah48TDe8h_198JGMRWcfePoI",
-            authDomain: "portal-3-fan-edition-chat.firebaseapp.com",
-            databaseURL: "https://portal-3-fan-edition-chat-default-rtdb.firebaseio.com",
-            projectId: "portal-3-fan-edition-chat",
-            storageBucket: "portal-3-fan-edition-chat.firebasestorage.app",
-            messagingSenderId: "777505175022",
-            appId: "1:777505175022:web:7d600df32d8b16e26f0aff"
-        };
+    <script>
+        // ===== INIT =====
+        const loadingScreen = document.getElementById('loadingScreen');
+        const errorScreen = document.getElementById('errorScreen');
+        const errorText = document.getElementById('errorText');
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const auth = getAuth(app);
+        try {
+            // Initialize Firebase
+            const firebaseConfig = {
+                apiKey: "AIzaSyBpCgLs7DAah48TDe8h_198JGMRWcfePoI",
+                authDomain: "portal-3-fan-edition-chat.firebaseapp.com",
+                databaseURL: "https://portal-3-fan-edition-chat-default-rtdb.firebaseio.com",
+                projectId: "portal-3-fan-edition-chat",
+                storageBucket: "portal-3-fan-edition-chat.firebasestorage.app",
+                messagingSenderId: "777505175022",
+                appId: "1:777505175022:web:7d600df32d8b16e26f0aff"
+            };
 
-        const ADMIN_EMAILS = ['gffrgogle.com@gmail.com', 'portal3.fanedition.support@gmail.com'];
-        const ADMIN_PHONES = ['+79605326310'];
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.database();
+            const auth = firebase.auth();
 
-        function checkIsAdmin(user) {
-            if (!user) return false;
-            if (ADMIN_EMAILS.includes(user.email)) return true;
-            if (ADMIN_PHONES.includes(user.phoneNumber)) return true;
-            const providers = user.providerData || [];
-            for (const p of providers) if (p.providerId === 'github.com') return true;
-            return false;
-        }
+            const ADMIN_EMAILS = ['gffrgogle.com@gmail.com', 'portal3.fanedition.support@gmail.com'];
+            const ADMIN_PHONES = ['+79605326310'];
 
-        // ===== STATE =====
-        let isAdmin = false;
-        let myUid = null;
-        let guestId = '';
-        let guestName = '';
-        let selectedDialogId = null;
-        let currentDialogUnsub = null;
-        let totalUnread = 0;
-        let originalTitle = document.title;
-
-        const adminLayout = document.getElementById('adminLayout');
-        const userLayout = document.getElementById('userLayout');
-        const dialogsList = document.getElementById('dialogsList');
-        const adminChatMessages = document.getElementById('adminChatMessages');
-        const adminChatInput = document.getElementById('adminChatInput');
-        const adminChatTitle = document.getElementById('adminChatTitle');
-        const userChatArea = document.getElementById('userChatArea');
-        const userChatInput = document.getElementById('userChatInput');
-        const guestSetup = document.getElementById('guestSetup');
-
-        // ===== GUEST ID =====
-        function getGuestId() {
-            let gid = localStorage.getItem('supportGuestId');
-            if (!gid) {
-                gid = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('supportGuestId', gid);
+            function checkIsAdmin(user) {
+                if (!user) return false;
+                if (ADMIN_EMAILS.includes(user.email)) return true;
+                if (ADMIN_PHONES.includes(user.phoneNumber)) return true;
+                const providers = user.providerData || [];
+                for (const p of providers) if (p.providerId === 'github.com') return true;
+                return false;
             }
-            return gid;
-        }
 
-        // ===== AUTH =====
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                myUid = user.uid;
-                isAdmin = checkIsAdmin(user);
-                const userSnap = await get(ref(db, 'users/' + user.uid));
-                if (userSnap.exists()) {
-                    guestName = userSnap.val().name || user.displayName || 'Пользователь';
-                } else {
-                    guestName = user.displayName || user.email || 'Пользователь';
-                }
-                guestId = 'user_' + user.uid;
+            // ===== STATE =====
+            let isAdmin = false;
+            let myUid = null;
+            let guestId = '';
+            let guestName = '';
+            let selectedDialogId = null;
+            let currentDialogRef = null;
+            let totalUnread = 0;
+            let originalTitle = document.title;
 
-                if (isAdmin) {
-                    showAdminLayout();
-                } else {
-                    showUserLayout();
-                    startChat();
+            const adminLayout = document.getElementById('adminLayout');
+            const userLayout = document.getElementById('userLayout');
+            const dialogsList = document.getElementById('dialogsList');
+            const adminChatMessages = document.getElementById('adminChatMessages');
+            const adminChatInput = document.getElementById('adminChatInput');
+            const adminChatTitle = document.getElementById('adminChatTitle');
+            const userChatArea = document.getElementById('userChatArea');
+            const userChatInput = document.getElementById('userChatInput');
+            const guestSetup = document.getElementById('guestSetup');
+
+            // ===== GUEST ID =====
+            function getGuestId() {
+                let gid = localStorage.getItem('supportGuestId');
+                if (!gid) {
+                    gid = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('supportGuestId', gid);
                 }
-            } else {
-                // Гость
-                guestId = getGuestId();
-                const savedName = localStorage.getItem('supportGuestName');
-                if (savedName) {
-                    guestName = savedName;
-                    showUserLayout();
-                    startChat();
+                return gid;
+            }
+
+            // ===== AUTH =====
+            auth.onAuthStateChanged(async function(user) {
+                loadingScreen.style.display = 'none';
+
+                if (user) {
+                    myUid = user.uid;
+                    isAdmin = checkIsAdmin(user);
+
+                    try {
+                        const userSnap = await db.ref('users/' + user.uid).once('value');
+                        if (userSnap.exists()) {
+                            guestName = userSnap.val().name || user.displayName || 'Пользователь';
+                        } else {
+                            guestName = user.displayName || user.email || 'Пользователь';
+                        }
+                    } catch(e) {
+                        guestName = user.displayName || user.email || 'Пользователь';
+                    }
+
+                    guestId = 'user_' + user.uid;
+
+                    if (isAdmin) {
+                        showAdminLayout();
+                    } else {
+                        showUserLayout();
+                        startChat();
+                    }
                 } else {
+                    guestId = getGuestId();
+                    const savedName = localStorage.getItem('supportGuestName');
                     showUserLayout();
+                    if (savedName) {
+                        guestName = savedName;
+                        startChat();
+                    }
+                }
+            });
+
+            function showAdminLayout() {
+                adminLayout.classList.add('active');
+                userLayout.classList.remove('active');
+                loadDialogs();
+            }
+
+            function showUserLayout() {
+                userLayout.classList.add('active');
+                adminLayout.classList.remove('active');
+            }
+
+            // ===== USER CHAT =====
+            window.startChat = function() {
+                const input = document.getElementById('guestNameInput');
+                if (input && input.value.trim()) {
+                    guestName = input.value.trim().substring(0, 20);
+                    localStorage.setItem('supportGuestName', guestName);
+                }
+                if (!guestName) guestName = 'Гость';
+
+                guestSetup.style.display = 'none';
+                userChatInput.style.display = 'block';
+
+                loadUserMessages();
+                checkIfEmptyAndGreet();
+            };
+
+            async function checkIfEmptyAndGreet() {
+                try {
+                    const snap = await db.ref('support-chat/' + guestId + '/messages').once('value');
+                    if (!snap.exists()) {
+                        await db.ref('support-chat/' + guestId + '/messages').push({
+                            text: '👋 Привет, ' + guestName + '! Чем могу помочь? Опишите вашу проблему подробно.',
+                            sender: 'support',
+                            senderName: 'Поддержка Portal 3',
+                            time: firebase.database.ServerValue.TIMESTAMP,
+                            read: false
+                        });
+                        await db.ref('support-chat/' + guestId + '/meta').set({
+                            name: guestName,
+                            lastMessage: '👋 Привет, ' + guestName + '! Чем могу помочь?',
+                            lastTime: firebase.database.ServerValue.TIMESTAMP,
+                            unread: 0
+                        });
+                    }
+                } catch(e) {
+                    console.error('Greet error:', e);
                 }
             }
-        });
 
-        function showAdminLayout() {
-            adminLayout.classList.add('active');
-            userLayout.classList.remove('active');
-            loadDialogs();
-        }
-
-        function showUserLayout() {
-            userLayout.classList.add('active');
-            adminLayout.classList.remove('active');
-        }
-
-        // ===== USER CHAT =====
-        window.startChat = function() {
-            const input = document.getElementById('guestNameInput');
-            if (input && input.value.trim()) {
-                guestName = input.value.trim().substring(0, 20);
-                localStorage.setItem('supportGuestName', guestName);
+            function loadUserMessages() {
+                db.ref('support-chat/' + guestId + '/messages').on('child_added', function(snapshot) {
+                    const msg = snapshot.val();
+                    if (!msg) return;
+                    renderMessage(userChatArea, msg, msg.sender === 'user' || msg.sender === 'guest');
+                    scrollToBottom(userChatArea);
+                });
             }
-            if (!guestName) guestName = 'Гость';
 
-            guestSetup.style.display = 'none';
-            userChatInput.style.display = 'block';
+            window.sendUserMessage = function() {
+                const input = document.getElementById('userMsgInput');
+                const text = input.value.trim();
+                if (!text) return;
 
-            loadUserMessages();
-            checkIfEmptyAndGreet();
-        };
+                const msgData = {
+                    text: text,
+                    sender: myUid ? 'user' : 'guest',
+                    senderName: guestName,
+                    uid: myUid || guestId,
+                    time: firebase.database.ServerValue.TIMESTAMP,
+                    read: false
+                };
 
-        async function checkIfEmptyAndGreet() {
-            const snap = await get(ref(db, 'support-chat/' + guestId + '/messages'));
-            if (!snap.exists()) {
-                await push(ref(db, 'support-chat/' + guestId + '/messages'), {
-                    text: '👋 Привет, ' + guestName + '! Чем могу помочь? Опишите вашу проблему подробно.',
+                db.ref('support-chat/' + guestId + '/messages').push(msgData);
+                db.ref('support-chat/' + guestId + '/meta').set({
+                    name: guestName,
+                    lastMessage: text,
+                    lastTime: firebase.database.ServerValue.TIMESTAMP,
+                    unread: 0
+                });
+
+                input.value = '';
+
+                showTyping(document.getElementById('userTypingIndicator'));
+                setTimeout(function() {
+                    hideTyping(document.getElementById('userTypingIndicator'));
+                    sendAutoReply(text);
+                }, 1500 + Math.random() * 1500);
+            };
+
+            function sendAutoReply(userText) {
+                const lower = userText.toLowerCase();
+                let reply = '';
+
+                if (lower.includes('установ') || lower.includes('скачать')) {
+                    reply = '📥 Скачать игру можно на странице «Установка». Нужна помощь с конкретным шагом?';
+                } else if (lower.includes('чит') || lower.includes('код')) {
+                    reply = '🎮 Все чит-коды есть на странице «Чит-коды». Режим разработчика — 20 нажатий на версию в главном меню.';
+                } else if (lower.includes('майнкрафт') || lower.includes('minecraft') || lower.includes('мод')) {
+                    reply = '⛏ Моды для Minecraft: скачайте файл .jar и поместите в папку mods вашего Minecraft.';
+                } else if (lower.includes('сеть') || lower.includes('онлайн') || lower.includes('мультиплеер')) {
+                    reply = '🌐 Сетевая игра: создайте комнату в меню «Сетевая игра», скопируйте ключ и поделитесь им с друзьями.';
+                } else if (lower.includes('баг') || lower.includes('ошибка') || lower.includes('не работает') || lower.includes('проблема')) {
+                    reply = '🐛 Опишите проблему подробнее: на каком уровне/экране произошло, что именно не работает? Мы передадим разработчикам.';
+                } else if (lower.includes('привет') || lower.includes('здравствуй')) {
+                    reply = '👋 Привет! Чем могу помочь? Опишите ваш вопрос — я постараюсь помочь или передам оператору.';
+                } else {
+                    reply = '✅ Сообщение получено! Оператор ответит вам в ближайшее время.\n\n📧 Email: portal3.fanedition.support@gmail.com\n✈️ Telegram: https://t.me/+EjX-micaonI5MWEy';
+                }
+
+                db.ref('support-chat/' + guestId + '/messages').push({
+                    text: reply,
                     sender: 'support',
                     senderName: 'Поддержка Portal 3',
-                    time: serverTimestamp(),
+                    time: firebase.database.ServerValue.TIMESTAMP,
                     read: false
                 });
-                await set(ref(db, 'support-chat/' + guestId + '/meta'), {
+
+                db.ref('support-chat/' + guestId + '/meta').set({
                     name: guestName,
-                    lastMessage: '👋 Привет, ' + guestName + '! Чем могу помочь?',
-                    lastTime: serverTimestamp(),
+                    lastMessage: reply,
+                    lastTime: firebase.database.ServerValue.TIMESTAMP,
                     unread: 0
                 });
             }
-        }
 
-        function loadUserMessages() {
-            onChildAdded(ref(db, 'support-chat/' + guestId + '/messages'), (snapshot) => {
-                const msg = snapshot.val();
-                if (!msg) return;
-                renderMessage(userChatArea, msg, msg.sender === 'user' || msg.sender === 'guest');
-                scrollToBottom(userChatArea);
-            });
-        }
+            // ===== ADMIN PANEL =====
+            function loadDialogs() {
+                db.ref('support-chat').on('value', function(snapshot) {
+                    const data = snapshot.val() || {};
+                    renderDialogs(data);
 
-        window.sendUserMessage = function() {
-            const input = document.getElementById('userMsgInput');
-            const text = input.value.trim();
-            if (!text) return;
+                    let unread = 0;
+                    Object.values(data).forEach(function(dialog) {
+                        if (dialog.messages) {
+                            Object.values(dialog.messages).forEach(function(msg) {
+                                if (msg.sender !== 'support' && !msg.read) unread++;
+                            });
+                        }
+                    });
+                    totalUnread = unread;
 
-            const msgData = {
-                text: text,
-                sender: myUid ? 'user' : 'guest',
-                senderName: guestName,
-                uid: myUid || guestId,
-                time: serverTimestamp(),
-                read: false
-            };
-
-            push(ref(db, 'support-chat/' + guestId + '/messages'), msgData);
-            set(ref(db, 'support-chat/' + guestId + '/meta'), {
-                name: guestName,
-                lastMessage: text,
-                lastTime: serverTimestamp(),
-                unread: (totalUnread + 1)
-            });
-
-            input.value = '';
-
-            // Автоответ
-            showTyping(document.getElementById('userTypingIndicator'));
-            setTimeout(() => {
-                hideTyping(document.getElementById('userTypingIndicator'));
-                sendAutoReply(text);
-            }, 1500 + Math.random() * 1500);
-        };
-
-        function sendAutoReply(userText) {
-            const lower = userText.toLowerCase();
-            let reply = '';
-
-            if (lower.includes('установ') || lower.includes('скачать')) {
-                reply = '📥 Скачать игру можно на странице «Установка». Нужна помощь с конкретным шагом?';
-            } else if (lower.includes('чит') || lower.includes('код')) {
-                reply = '🎮 Все чит-коды есть на странице «Чит-коды». Режим разработчика — 20 нажатий на версию в главном меню.';
-            } else if (lower.includes('майнкрафт') || lower.includes('minecraft') || lower.includes('мод')) {
-                reply = '⛏ Моды для Minecraft: скачайте файл .jar и поместите в папку mods вашего Minecraft.';
-            } else if (lower.includes('сеть') || lower.includes('онлайн') || lower.includes('мультиплеер')) {
-                reply = '🌐 Сетевая игра: создайте комнату в меню «Сетевая игра», скопируйте ключ и поделитесь им с друзьями.';
-            } else if (lower.includes('баг') || lower.includes('ошибка') || lower.includes('не работает') || lower.includes('проблема')) {
-                reply = '🐛 Опишите проблему подробнее: на каком уровне/экране произошло, что именно не работает? Мы передадим разработчикам.';
-            } else if (lower.includes('привет') || lower.includes('здравствуй')) {
-                reply = '👋 Привет! Чем могу помочь? Опишите ваш вопрос — я постараюсь помочь или передам оператору.';
-            } else {
-                reply = '✅ Сообщение получено! Оператор ответит вам в ближайшее время.\n\n📧 Email: portal3.fanedition.support@gmail.com\n✈️ Telegram: https://t.me/+EjX-micaonI5MWEy';
-            }
-
-            push(ref(db, 'support-chat/' + guestId + '/messages'), {
-                text: reply,
-                sender: 'support',
-                senderName: 'Поддержка Portal 3',
-                time: serverTimestamp(),
-                read: false
-            });
-
-            set(ref(db, 'support-chat/' + guestId + '/meta'), {
-                name: guestName,
-                lastMessage: reply,
-                lastTime: serverTimestamp(),
-                unread: 0
-            });
-        }
-
-        // ===== ADMIN PANEL =====
-        function loadDialogs() {
-            onValue(ref(db, 'support-chat'), (snapshot) => {
-                const data = snapshot.val() || {};
-                renderDialogs(data);
-
-                // Подсчёт непрочитанных
-                let unread = 0;
-                Object.values(data).forEach(dialog => {
-                    if (dialog.messages) {
-                        Object.values(dialog.messages).forEach(msg => {
-                            if (msg.sender !== 'support' && !msg.read) unread++;
-                        });
+                    if (unread > 0) {
+                        document.title = '🔴 (' + unread + ') Чаты поддержки';
+                        playNotificationSound();
+                        vibrate();
+                    } else {
+                        document.title = originalTitle;
                     }
                 });
-                totalUnread = unread;
-
-                // Уведомления
-                if (unread > 0) {
-                    document.title = '🔴 (' + unread + ') Чаты поддержки';
-                    playNotificationSound();
-                    vibrate();
-                } else {
-                    document.title = originalTitle;
-                }
-            });
-        }
-
-        function renderDialogs(data) {
-            dialogsList.innerHTML = '';
-            const entries = Object.entries(data).sort((a, b) => {
-                const ta = a[1].meta?.lastTime || 0;
-                const tb = b[1].meta?.lastTime || 0;
-                return tb - ta;
-            });
-
-            if (entries.length === 0) {
-                dialogsList.innerHTML = '<div style="padding:20px; text-align:center; color:#667;">Пока нет обращений</div>';
-                return;
             }
 
-            entries.forEach(([dialogId, dialog]) => {
-                const meta = dialog.meta || {};
-                const item = document.createElement('div');
-                item.className = 'dialog-item' + (dialogId === selectedDialogId ? ' active' : '');
-                item.onclick = () => selectDialog(dialogId, meta.name || 'Гость');
+            function renderDialogs(data) {
+                dialogsList.innerHTML = '';
+                const entries = Object.entries(data).sort(function(a, b) {
+                    const ta = a[1].meta && a[1].meta.lastTime ? a[1].meta.lastTime : 0;
+                    const tb = b[1].meta && b[1].meta.lastTime ? b[1].meta.lastTime : 0;
+                    return tb - ta;
+                });
 
-                // Подсчёт непрочитанных в этом диалоге
-                let dialogUnread = 0;
-                if (dialog.messages) {
-                    Object.values(dialog.messages).forEach(msg => {
-                        if (msg.sender !== 'support' && !msg.read) dialogUnread++;
-                    });
+                if (entries.length === 0) {
+                    dialogsList.innerHTML = '<div style="padding:20px; text-align:center; color:#667;">Пока нет обращений</div>';
+                    return;
                 }
 
-                const time = meta.lastTime ? new Date(meta.lastTime).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '';
-                const preview = meta.lastMessage || 'Нет сообщений';
+                entries.forEach(function([dialogId, dialog]) {
+                    const meta = dialog.meta || {};
+                    const item = document.createElement('div');
+                    item.className = 'dialog-item' + (dialogId === selectedDialogId ? ' active' : '');
+                    item.onclick = function() { selectDialog(dialogId, meta.name || 'Гость'); };
 
-                item.innerHTML = `
-                    <div class="dialog-name">${escapeHtml(meta.name || 'Гость')}</div>
-                    <div class="dialog-preview">${escapeHtml(preview)}</div>
-                    <div class="dialog-time">${time}</div>
-                    ${dialogUnread > 0 ? '<div class="unread-badge">' + dialogUnread + '</div>' : ''}
-                `;
-                dialogsList.appendChild(item);
-            });
-        }
+                    let dialogUnread = 0;
+                    if (dialog.messages) {
+                        Object.values(dialog.messages).forEach(function(msg) {
+                            if (msg.sender !== 'support' && !msg.read) dialogUnread++;
+                        });
+                    }
 
-        window.selectDialog = function(dialogId, name) {
-            selectedDialogId = dialogId;
-            adminChatTitle.textContent = '💬 ' + (name || 'Гость');
-            adminChatInput.style.display = 'block';
-            adminChatMessages.innerHTML = '';
+                    const time = meta.lastTime ? new Date(meta.lastTime).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '';
+                    const preview = meta.lastMessage || 'Нет сообщений';
 
-            // Обновляем active класс
-            document.querySelectorAll('.dialog-item').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-
-            // Отписываемся от предыдущего
-            if (currentDialogUnsub) currentDialogUnsub();
-
-            // Загружаем сообщения
-            currentDialogUnsub = onChildAdded(ref(db, 'support-chat/' + dialogId + '/messages'), (snapshot) => {
-                const msg = snapshot.val();
-                if (!msg) return;
-                const isSupport = msg.sender === 'support';
-                renderMessage(adminChatMessages, msg, isSupport);
-                scrollToBottom(adminChatMessages);
-
-                // Помечаем как прочитанное
-                if (!isSupport && !msg.read) {
-                    set(ref(db, 'support-chat/' + dialogId + '/messages/' + snapshot.key + '/read'), true);
-                }
-            });
-
-            // На мобильных скрываем sidebar
-            if (window.innerWidth <= 768) {
-                document.getElementById('dialogsSidebar').classList.add('hidden');
+                    item.innerHTML = '<div class="dialog-name">' + escapeHtml(meta.name || 'Гость') + '</div>' +
+                        '<div class="dialog-preview">' + escapeHtml(preview) + '</div>' +
+                        '<div class="dialog-time">' + time + '</div>' +
+                        (dialogUnread > 0 ? '<div class="unread-badge">' + dialogUnread + '</div>' : '');
+                    dialogsList.appendChild(item);
+                });
             }
-        };
 
-        window.sendAdminMessage = function() {
-            if (!selectedDialogId) return;
-            const input = document.getElementById('adminMsgInput');
-            const text = input.value.trim();
-            if (!text) return;
+            window.selectDialog = function(dialogId, name) {
+                selectedDialogId = dialogId;
+                adminChatTitle.textContent = '💬 ' + (name || 'Гость');
+                adminChatInput.style.display = 'block';
+                adminChatMessages.innerHTML = '';
 
-            push(ref(db, 'support-chat/' + selectedDialogId + '/messages'), {
-                text: text,
-                sender: 'support',
-                senderName: 'Поддержка Portal 3',
-                time: serverTimestamp(),
-                read: true
-            });
+                if (currentDialogRef) currentDialogRef.off();
 
-            set(ref(db, 'support-chat/' + selectedDialogId + '/meta'), {
-                name: guestName,
-                lastMessage: text,
-                lastTime: serverTimestamp(),
-                unread: 0
-            });
+                currentDialogRef = db.ref('support-chat/' + dialogId + '/messages');
+                currentDialogRef.on('child_added', function(snapshot) {
+                    const msg = snapshot.val();
+                    if (!msg) return;
+                    const isSupport = msg.sender === 'support';
+                    renderMessage(adminChatMessages, msg, isSupport);
+                    scrollToBottom(adminChatMessages);
 
-            input.value = '';
-        };
+                    if (!isSupport && !msg.read) {
+                        db.ref('support-chat/' + dialogId + '/messages/' + snapshot.key + '/read').set(true);
+                    }
+                });
 
-        // ===== SHARED FUNCTIONS =====
-        function renderMessage(container, msg, isOwn) {
-            const row = document.createElement('div');
-            row.className = 'msg-row ' + (isOwn ? 'support' : 'user');
-            const time = msg.time ? new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '';
+                if (window.innerWidth <= 768) {
+                    document.getElementById('dialogsSidebar').classList.add('hidden');
+                }
+            };
 
-            row.innerHTML = `
-                <div class="msg-bubble ${isOwn ? 'support' : 'user'}">
-                    ${!isOwn ? '<div class="msg-sender">' + escapeHtml(msg.senderName || 'Пользователь') + '</div>' : ''}
-                    ${escapeHtml(msg.text)}
-                    <span class="msg-time">${time}</span>
-                </div>
-            `;
-            container.appendChild(row);
+            window.sendAdminMessage = function() {
+                if (!selectedDialogId) return;
+                const input = document.getElementById('adminMsgInput');
+                const text = input.value.trim();
+                if (!text) return;
+
+                db.ref('support-chat/' + selectedDialogId + '/messages').push({
+                    text: text,
+                    sender: 'support',
+                    senderName: 'Поддержка Portal 3',
+                    time: firebase.database.ServerValue.TIMESTAMP,
+                    read: true
+                });
+
+                db.ref('support-chat/' + selectedDialogId + '/meta').set({
+                    name: guestName,
+                    lastMessage: text,
+                    lastTime: firebase.database.ServerValue.TIMESTAMP,
+                    unread: 0
+                });
+
+                input.value = '';
+            };
+
+            // ===== SHARED FUNCTIONS =====
+            function renderMessage(container, msg, isOwn) {
+                const row = document.createElement('div');
+                row.className = 'msg-row ' + (isOwn ? 'support' : 'user');
+                const time = msg.time ? new Date(msg.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '';
+
+                row.innerHTML = '<div class="msg-bubble ' + (isOwn ? 'support' : 'user') + '">' +
+                    (!isOwn ? '<div class="msg-sender">' + escapeHtml(msg.senderName || 'Пользователь') + '</div>' : '') +
+                    escapeHtml(msg.text) +
+                    '<span class="msg-time">' + time + '</span></div>';
+                container.appendChild(row);
+            }
+
+            function scrollToBottom(container) {
+                container.scrollTop = container.scrollHeight;
+            }
+
+            function showTyping(el) {
+                el.classList.add('active');
+            }
+            function hideTyping(el) {
+                el.classList.remove('active');
+            }
+
+            function escapeHtml(t) {
+                const d = document.createElement('div');
+                d.textContent = t;
+                return d.innerHTML;
+            }
+
+            function playNotificationSound() {
+                try {
+                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVanu8LdnGgU1k9n1unEiBC13yO/eizEIHWq+8+OZURE');
+                    audio.volume = 0.3;
+                    audio.play().catch(function(){});
+                } catch(e) {}
+            }
+
+            function vibrate() {
+                if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            }
+
+            // ===== AUTH MODAL =====
+            window.openAuthModal = function() {
+                document.getElementById('authModal').style.display = 'flex';
+                document.getElementById('authModal').classList.add('active');
+                showLoginForm();
+            };
+            window.closeAuthModal = function() {
+                document.getElementById('authModal').style.display = 'none';
+                document.getElementById('authModal').classList.remove('active');
+            };
+
+            function showLoginForm() {
+                document.getElementById('authPanelContent').innerHTML =
+                    '<h2>🔐 Вход</h2>' +
+                    '<button class="auth-btn" onclick="signInGoogle()">🔵 Войти через Google</button>' +
+                    '<button class="auth-btn" onclick="signInGitHub()">⚫ Войти через GitHub</button>' +
+                    '<div class="auth-divider">— или —</div>' +
+                    '<div class="auth-form">' +
+                    '<input type="email" id="emailInput" placeholder="Email">' +
+                    '<input type="password" id="passInput" placeholder="Пароль">' +
+                    '<div class="auth-error" id="emailError"></div>' +
+                    '<button onclick="signInEmail()">Войти</button></div>' +
+                    '<div class="auth-divider">— или —</div>' +
+                    '<div class="auth-form">' +
+                    '<input type="tel" id="phoneInput" placeholder="+7 999 123 45 67">' +
+                    '<div id="recaptcha-container"></div>' +
+                    '<button onclick="sendPhoneCode()">Получить код SMS</button>' +
+                    '<input type="text" id="phoneCodeInput" placeholder="Код из SMS" style="margin-top:8px;">' +
+                    '<button onclick="confirmPhoneCode()">Подтвердить</button>' +
+                    '<div class="auth-error" id="phoneError"></div></div>' +
+                    '<div class="reg-link" onclick="showRegForm()">Регистрация</div>' +
+                    '<div class="close-modal" onclick="closeAuthModal()">← Закрыть</div>';
+            }
+
+            window.showRegForm = function() {
+                document.getElementById('authPanelContent').innerHTML =
+                    '<h2>📝 Регистрация</h2>' +
+                    '<div class="auth-form">' +
+                    '<input type="text" id="regNameInput" placeholder="Имя пользователя (уникальное)">' +
+                    '<input type="email" id="regEmailInput" placeholder="Email">' +
+                    '<input type="password" id="regPassInput" placeholder="Пароль (мин. 6 символов)">' +
+                    '<input type="url" id="regAvatarInput" placeholder="URL аватарки (необязательно)">' +
+                    '<div class="auth-error" id="regError"></div>' +
+                    '<button onclick="registerUser()">Зарегистрироваться</button></div>' +
+                    '<div class="reg-link" onclick="showLoginForm()">Уже есть аккаунт? Войти</div>' +
+                    '<div class="close-modal" onclick="closeAuthModal()">← Закрыть</div>';
+            };
+
+            window.signInGoogle = function() {
+                auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(err) {
+                    alert('Ошибка: ' + err.message);
+                });
+            };
+            window.signInGitHub = function() {
+                auth.signInWithPopup(new firebase.auth.GithubAuthProvider()).catch(function(err) {
+                    alert('Ошибка: ' + err.message);
+                });
+            };
+            window.signInEmail = function() {
+                const email = document.getElementById('emailInput').value.trim();
+                const pass = document.getElementById('passInput').value;
+                const err = document.getElementById('emailError');
+                err.textContent = '';
+                if (!email || !pass) { err.textContent = 'Введите email и пароль'; return; }
+                auth.signInWithEmailAndPassword(email, pass).catch(function(e) { err.textContent = e.message; });
+            };
+            window.registerUser = async function() {
+                const name = document.getElementById('regNameInput').value.trim();
+                const email = document.getElementById('regEmailInput').value.trim();
+                const pass = document.getElementById('regPassInput').value;
+                const avatar = document.getElementById('regAvatarInput')?.value.trim() || '';
+                const err = document.getElementById('regError');
+                err.textContent = '';
+                if (!name || !email || !pass) { err.textContent = 'Заполните все поля'; return; }
+                if (pass.length < 6) { err.textContent = 'Пароль минимум 6 символов'; return; }
+                if (name.length < 2 || name.length > 20) { err.textContent = 'Имя: 2-20 символов'; return; }
+                try {
+                    const namesSnap = await db.ref('usernames/' + name.toLowerCase()).once('value');
+                    if (namesSnap.exists()) { err.textContent = 'Это имя уже занято'; return; }
+                    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+                    await db.ref('users/' + cred.user.uid).set({ name, email, avatar });
+                    await db.ref('usernames/' + name.toLowerCase()).set(cred.user.uid);
+                    await cred.user.updateProfile({ displayName: name, photoURL: avatar });
+                } catch (e) { err.textContent = e.message; }
+            };
+
+            let confirmationResult = null;
+            let recaptchaVerifier = null;
+            window.sendPhoneCode = function() {
+                const phone = document.getElementById('phoneInput').value.trim();
+                const err = document.getElementById('phoneError');
+                err.textContent = '';
+                if (!phone || phone.length < 10) { err.textContent = 'Введите номер'; return; }
+                if (!recaptchaVerifier) {
+                    recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' });
+                }
+                auth.signInWithPhoneNumber(phone, recaptchaVerifier).then(function(r) {
+                    confirmationResult = r;
+                    alert('Код отправлен!');
+                }).catch(function(e) { err.textContent = e.message; });
+            };
+            window.confirmPhoneCode = function() {
+                const code = document.getElementById('phoneCodeInput').value.trim();
+                const err = document.getElementById('phoneError');
+                err.textContent = '';
+                if (!code) { err.textContent = 'Введите код'; return; }
+                if (!confirmationResult) { err.textContent = 'Сначала запросите код'; return; }
+                confirmationResult.confirm(code).catch(function(e) { err.textContent = e.message; });
+            };
+
+        } catch(e) {
+            console.error('FATAL ERROR:', e);
+            loadingScreen.style.display = 'none';
+            errorScreen.classList.add('active');
+            errorText.textContent = 'Ошибка: ' + e.message;
         }
-
-        function scrollToBottom(container) {
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function showTyping(el) {
-            el.classList.add('active');
-        }
-        function hideTyping(el) {
-            el.classList.remove('active');
-        }
-
-        function escapeHtml(t) {
-            const d = document.createElement('div');
-            d.textContent = t;
-            return d.innerHTML;
-        }
-
-        // ===== NOTIFICATIONS =====
-        function playNotificationSound() {
-            try {
-                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVanu8LdnGgU1k9n1unEiBC13yO/eizEIHWq+8+OZURE');
-                audio.volume = 0.3;
-                audio.play().catch(() => {});
-            } catch(e) {}
-        }
-
-        function vibrate() {
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-        }
-
-        // ===== AUTH MODAL (shared with chat.html) =====
-        window.openAuthModal = function() {
-            document.getElementById('authModal').style.display = 'flex';
-            showLoginForm();
-        };
-        window.closeAuthModal = function() {
-            document.getElementById('authModal').style.display = 'none';
-        };
-
-        function showLoginForm() {
-            document.getElementById('authPanelContent').innerHTML = `
-                <h2 style="color:#f5a623; text-align:center; margin-bottom:16px;">🔐 Вход</h2>
-                <button class="auth-btn" style="display:block; width:100%; margin:8px 0; padding:12px; border-radius:10px; border:1px solid #f5a62355; background:#0d1117; color:#fff; font-size:1rem; cursor:pointer; text-align:center;" onclick="signInGoogle()">🔵 Войти через Google</button>
-                <button class="auth-btn" style="display:block; width:100%; margin:8px 0; padding:12px; border-radius:10px; border:1px solid #f5a62355; background:#0d1117; color:#fff; font-size:1rem; cursor:pointer; text-align:center;" onclick="signInGitHub()">⚫ Войти через GitHub</button>
-                <div style="color:#667; text-align:center; margin:12px 0; font-size:0.85rem;">— или —</div>
-                <div style="width:100%;">
-                    <input type="email" id="emailInput" placeholder="Email" style="width:100%; padding:10px; margin:4px 0; border-radius:8px; border:1px solid #f5a62355; background:#0d1117; color:#fff; font-size:0.95rem; box-sizing:border-box;">
-                    <input type="password" id="passInput" placeholder="Пароль" style="width:100%; padding:10px; margin:4px 0; border-radius:8px; border:1px solid #f5a62355; background:#0d1117; color:#fff; font-size:0.95rem; box-sizing:border-box;">
-                    <div style="color:#ff4444; font-size:0.8rem; margin:4px 0; min-height:1.2em;" id="emailError"></div>
-                    <button onclick="signInEmail()" style="width:100%; padding:10px; margin-top:8px; border-radius:8px; border:none; background:#f5a623; color:#000; font-weight:bold; cursor:pointer; font-size:0.95rem;">Войти</button>
-                </div>
-                <div style="color:#f5a623; cursor:pointer; text-decoration:underline; font-size:0.9rem; display:block; text-align:center; margin:12px 0 8px; padding:8px;" onclick="showRegForm()">Регистрация</div>
-                <div style="text-align:center; color:#667; margin-top:16px; cursor:pointer; font-size:0.9rem; padding:8px;" onclick="closeAuthModal()">← Закрыть</div>
-            `;
-        }
-
-        window.showRegForm = function() {
-            document.getElementById('authPanelContent').innerHTML = `
-                <h2 style="color:#f5a623; text-align:center; margin-bottom:16px;">📝 Регистрация</h2>
-                <div style="width:100%;">
-                    <input type="text" id="regNameInput" placeholder="Имя пользователя (уникальное)" style="width:100%; padding:10px; margin:4px 0; border-radius:8px; border:1px solid #f5a62355; background:#0d1117; color:#fff; font-size:0.95rem; box-sizing:border-box;">
-                    <input type="email" id="regEmailInput" placeholder="Email" style="width:100%; padding:10px; margin:4px 0; border-radius:8px; border:1px solid #f5a62355; background:#0d1117; color:#fff; font-size:0.95rem; box-sizing:border-box;">
-                    <input type="password" id="regPassInput" placeholder="Пароль (мин. 6 символов)" style="width:100%; padding:10px; margin:4px 0; border-radius:8px; border:1px solid #f5a62355; background:#0d1117; color:#fff; font-size:0.95rem; box-sizing:border-box;">
-                    <input type="url" id="regAvatarInput" placeholder="URL аватарки (необязательно)" style="width:100%; padding:10px; margin:4px 0; border-radius:8px; border:1px solid #f5a62355; background:#0d1117; color:#fff; font-size:0.95rem; box-sizing:border-box;">
-                    <div style="color:#ff4444; font-size:0.8rem; margin:4px 0; min-height:1.2em;" id="regError"></div>
-                    <button onclick="registerUser()" style="width:100%; padding:10px; margin-top:8px; border-radius:8px; border:none; background:#f5a623; color:#000; font-weight:bold; cursor:pointer; font-size:0.95rem;">Зарегистрироваться</button>
-                </div>
-                <div style="color:#f5a623; cursor:pointer; text-decoration:underline; font-size:0.9rem; display:block; text-align:center; margin:12px 0 8px; padding:8px;" onclick="showLoginForm()">Уже есть аккаунт? Войти</div>
-                <div style="text-align:center; color:#667; margin-top:16px; cursor:pointer; font-size:0.9rem; padding:8px;" onclick="closeAuthModal()">← Закрыть</div>
-            `;
-        };
-
-        window.signInGoogle = function() {
-            signInWithPopup(auth, new GoogleAuthProvider()).catch(err => alert('Ошибка: ' + err.message));
-        };
-        window.signInGitHub = function() {
-            signInWithPopup(auth, new GithubAuthProvider()).catch(err => alert('Ошибка: ' + err.message));
-        };
-        window.signInEmail = function() {
-            const email = document.getElementById('emailInput').value.trim();
-            const pass = document.getElementById('passInput').value;
-            const err = document.getElementById('emailError');
-            err.textContent = '';
-            if (!email || !pass) { err.textContent = 'Введите email и пароль'; return; }
-            signInWithEmailAndPassword(auth, email, pass).catch(e => { err.textContent = e.message; });
-        };
-        window.registerUser = async function() {
-            const name = document.getElementById('regNameInput').value.trim();
-            const email = document.getElementById('regEmailInput').value.trim();
-            const pass = document.getElementById('regPassInput').value;
-            const avatar = document.getElementById('regAvatarInput')?.value.trim() || '';
-            const err = document.getElementById('regError');
-            err.textContent = '';
-            if (!name || !email || !pass) { err.textContent = 'Заполните все поля'; return; }
-            if (pass.length < 6) { err.textContent = 'Пароль минимум 6 символов'; return; }
-            if (name.length < 2 || name.length > 20) { err.textContent = 'Имя: 2-20 символов'; return; }
-            try {
-                const namesSnap = await get(ref(db, 'usernames/' + name.toLowerCase()));
-                if (namesSnap.exists()) { err.textContent = 'Это имя уже занято'; return; }
-                const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                await set(ref(db, 'users/' + cred.user.uid), { name, email, avatar });
-                await set(ref(db, 'usernames/' + name.toLowerCase()), cred.user.uid);
-                await updateProfile(cred.user, { displayName: name, photoURL: avatar });
-            } catch (e) { err.textContent = e.message; }
-        };
     </script>
 </body>
-  </html>
+</html>
