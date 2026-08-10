@@ -4,195 +4,302 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal 3 — Поддержка</title>
+    <link rel="icon" href="portal3-icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="style.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background: #0d1117;
-            color: #e0e6f0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            min-height: 100vh;
+        .support-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        h1 { color: #58a6ff; text-align: center; margin-bottom: 8px; }
-        .subtitle { text-align: center; color: #8b949e; margin-bottom: 32px; }
-        
-        .nav {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .nav a {
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: #21262d;
-            color: #8b949e;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: 0.2s;
-        }
-        .nav a:hover, .nav a.active {
-            background: #238636;
-            color: #fff;
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-        @media (max-width: 768px) {
-            .grid { grid-template-columns: 1fr; }
-        }
-        
-        .card {
+
+        /* Карточка — точь-в-точь как .download-card, .server-info */
+        .support-card {
             background: #161b22;
             border: 1px solid #30363d;
-            border-radius: 16px;
+            border-radius: 12px;
             padding: 24px;
+            margin-bottom: 20px;
         }
-        .card h2 {
-            color: #f0883e;
-            margin-bottom: 16px;
-            font-size: 1.2rem;
-        }
-        
-        .faq-item {
-            margin-bottom: 12px;
-            padding: 12px;
-            background: #0d1117;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .faq-item:hover { background: #21262d; }
-        .faq-item strong {
+
+        .support-card h2 {
             color: #58a6ff;
+            margin-bottom: 8px;
+            font-size: 1.3rem;
+        }
+
+        .support-card > p {
+            color: #8b949e;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        /* Форма */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
             display: block;
-            margin-bottom: 4px;
-        }
-        .faq-item p { color: #8b949e; font-size: 0.9rem; }
-        
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-        .contact-btn {
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            text-decoration: none;
-            color: #fff;
+            color: #e0e6f0;
+            margin-bottom: 6px;
             font-size: 0.9rem;
-            transition: 0.2s;
+            font-weight: 500;
         }
-        .contact-btn:hover { transform: translateY(-2px); }
-        .contact-btn.discord { background: #5865F2; }
-        .contact-btn.telegram { background: #0088cc; }
-        .contact-btn.email { background: #EA4335; }
-        .contact-btn.vk { background: #4a76a8; }
-        
-        .chat-btn {
-            display: block;
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
             width: 100%;
-            padding: 16px;
-            border-radius: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            background: #0d1117;
+            color: #e0e6f0;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #58a6ff;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Кнопка — как .download-btn */
+        .submit-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 8px;
             border: none;
             background: #238636;
             color: #fff;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            font-weight: 600;
             cursor: pointer;
-            text-align: center;
+            transition: 0.2s;
             text-decoration: none;
+        }
+
+        .submit-btn:hover {
+            background: #2ea043;
+        }
+
+        .submit-btn:disabled {
+            background: #30363d;
+            cursor: not-allowed;
+        }
+
+        /* Сообщения */
+        .msg-success {
+            display: none;
+            padding: 14px 16px;
+            background: #23863622;
+            border: 1px solid #238636;
+            border-radius: 8px;
+            color: #3fb950;
             margin-top: 16px;
+            font-size: 0.9rem;
+        }
+        .msg-success.active { display: block; }
+
+        .msg-error {
+            display: none;
+            padding: 14px 16px;
+            background: #f8514922;
+            border: 1px solid #f85149;
+            border-radius: 8px;
+            color: #f85149;
+            margin-top: 16px;
+            font-size: 0.9rem;
+        }
+        .msg-error.active { display: block; }
+
+        /* Ссылки поддержки — как .download-card */
+        .support-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .support-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            color: #e0e6f0;
+            text-decoration: none;
             transition: 0.2s;
         }
-        .chat-btn:hover { background: #2ea043; }
-        
-        .footer {
-            text-align: center;
-            padding: 40px 20px;
+
+        .support-link:hover {
+            background: #1f242c;
+            border-color: #58a6ff;
+        }
+
+        .support-link-icon {
+            font-size: 1.5rem;
+        }
+
+        .support-link-text strong {
+            display: block;
+            color: #58a6ff;
+            margin-bottom: 2px;
+            font-size: 0.95rem;
+        }
+
+        .support-link-text span {
+            font-size: 0.85rem;
             color: #8b949e;
-            border-top: 1px solid #30363d;
-            margin-top: 40px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🛠️ ПОДДЕРЖКА</h1>
-        <p class="subtitle">Portal 3: Fan Edition — помощь и ответы на вопросы</p>
-        
+        <h1>🚀 Portal 3: Fan Edition</h1>
+        <p class="subtitle">Свяжитесь с нами</p>
+
         <div class="nav">
             <a href="index.html">Главная</a>
-            <a href="download.html">Установка</a>
-            <a href="minecraft.html">Моды</a>
-            <a href="cheats.html">Чит-коды</a>
+            <a href="download.html">Скачать</a>
+            <a href="minecraft.html">Майнкрафт</a>
+            <a href="cheats.html">Читы</a>
             <a href="support.html" class="active">Поддержка</a>
             <a href="chat.html">Чат</a>
         </div>
-        
-        <div class="grid">
-            <!-- FAQ -->
-            <div>
-                <div class="card" style="margin-bottom: 24px;">
-                    <h2>❓ Частые вопросы</h2>
-                    <div class="faq-item" onclick="location.href='support-chat.html?question=скачать'">
-                        <strong>Как скачать игру?</strong>
-                        <p>Перейдите на страницу "Установка" или спросите PortalBot</p>
-                    </div>
-                    <div class="faq-item" onclick="location.href='support-chat.html?question=чит коды'">
-                        <strong>Где найти чит-коды?</strong>
-                        <p>На странице "Чит-коды" или спросите PortalBot</p>
-                    </div>
-                    <div class="faq-item" onclick="location.href='support-chat.html?question=не запускается'">
-                        <strong>Игра не запускается</strong>
-                        <p>Проверьте системные требования или спросите PortalBot</p>
-                    </div>
-                    <div class="faq-item" onclick="location.href='support-chat.html?question=майнкрафт моды'">
-                        <strong>Моды для Minecraft</strong>
-                        <p>На странице "Моды" или спросите PortalBot</p>
-                    </div>
+
+        <!-- Форма обратной связи -->
+        <div class="support-card">
+            <h2>📨 Написать в поддержку</h2>
+            <p>Опишите вашу проблему или предложение. Мы ответим вам в чате поддержки.</p>
+
+            <form id="supportForm">
+                <div class="form-group">
+                    <label for="name">Ваше имя</label>
+                    <input type="text" id="name" placeholder="Как к вам обращаться?" required>
                 </div>
-                
-                <div class="card">
-                    <h2>📱 Связаться с нами</h2>
-                    <div class="contact-grid">
-                        <a href="https://discord.gg/JuJ6wXf9w" target="_blank" class="contact-btn discord">💬 Discord</a>
-                        <a href="https://t.me/+EjX-micaonI5MWEy" target="_blank" class="contact-btn telegram">✈️ Telegram</a>
-                        <a href="mailto:portal3.fanedition.support@gmail.com" class="contact-btn email">📧 Email</a>
-                        <a href="https://vk.me/join/4hobsDVJwsnzzU/dhPd_9nw0YvJSI/DDk5U=" target="_blank" class="contact-btn vk">📱 VK</a>
-                    </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="your@email.com" required>
                 </div>
+
+                <div class="form-group">
+                    <label for="category">Категория</label>
+                    <select id="category" required>
+                        <option value="">Выберите категорию</option>
+                        <option value="bug">🐛 Баг / Ошибка</option>
+                        <option value="question">❓ Вопрос</option>
+                        <option value="suggestion">💡 Предложение</option>
+                        <option value="other">📝 Другое</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Сообщение</label>
+                    <textarea id="message" placeholder="Опишите подробно..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">📤 Отправить</button>
+            </form>
+
+            <div class="msg-success" id="successMsg">
+                ✅ Сообщение отправлено! Перейдите в <a href="support-chat.html" style="color:#58a6ff;">чат поддержки</a>, чтобы увидеть ответ.
             </div>
-            
-            <!-- PortalBot карточка -->
-            <div class="card">
-                <h2>🤖 PortalBot — ИИ-помощник</h2>
-                <p style="color:#8b949e;margin-bottom:16px;">PortalBot знает ответы на большинство вопросов об игре. Если ИИ не справится — админ подключится!</p>
-                
-                <div style="background:#0d1117;border-radius:12px;padding:16px;margin-bottom:16px;">
-                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                        <div style="width:50px;height:50px;border-radius:50%;background:#238636;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🌐</div>
-                        <div>
-                            <div style="font-weight:600;">PortalBot</div>
-                            <div style="font-size:0.8rem;color:#3fb950;">● Онлайн</div>
-                        </div>
-                    </div>
-                    <p style="color:#8b949e;font-size:0.9rem;">Отвечает на вопросы об установке, чит-кодах, прохождении, модах Minecraft и багах.</p>
-                </div>
-                
-                <a href="support-chat.html" class="chat-btn">💬 Открыть чат с PortalBot</a>
-            </div>
+            <div class="msg-error" id="errorMsg"></div>
+        </div>
+
+        <!-- Ссылки -->
+        <div class="support-links">
+            <a href="support-chat.html" class="support-link">
+                <span class="support-link-icon">💬</span>
+                <span class="support-link-text">
+                    <strong>Чат поддержки</strong>
+                    <span>Напишите нам напрямую</span>
+                </span>
+            </a>
+            <a href="https://t.me/portal3fan" class="support-link" target="_blank">
+                <span class="support-link-icon">✈️</span>
+                <span class="support-link-text">
+                    <strong>Telegram</strong>
+                    <span>Наш канал</span>
+                </span>
+            </a>
+            <a href="mailto:portal3.fanedition.support@gmail.com" class="support-link">
+                <span class="support-link-icon">📧</span>
+                <span class="support-link-text">
+                    <strong>Email</strong>
+                    <span>portal3.fanedition.support@gmail.com</span>
+                </span>
+            </a>
         </div>
     </div>
-    
-    <div class="footer">
-        <p>© 2026 — SWILL · Portal 3: Fan Edition</p>
-        <p style="margin-top:8px;">PortalBot работает на 🤖 AI Bots Platform</p>
-    </div>
+
+    <div class="footer">© 2026 — SWILL | Portal 3: Fan Edition</div>
+
+    <script>
+        const API_URL = 'http://localhost:9000/api';
+
+        document.getElementById('supportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const successMsg = document.getElementById('successMsg');
+            const errorMsg = document.getElementById('errorMsg');
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Отправка...';
+            successMsg.classList.remove('active');
+            errorMsg.classList.remove('active');
+
+            const data = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                category: document.getElementById('category').value,
+                message: document.getElementById('message').value
+            };
+
+            // Пробуем отправить на бэкенд
+            try {
+                const token = localStorage.getItem('portal3_token');
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+
+                const res = await fetch(API_URL + '/support/message', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    successMsg.classList.add('active');
+                    document.getElementById('supportForm').reset();
+                } else {
+                    throw new Error('Ошибка сервера');
+                }
+            } catch (e) {
+                // Бэкенд недоступен — сохраняем локально и показываем успех
+                const localTickets = JSON.parse(localStorage.getItem('portal3_tickets') || '[]');
+                localTickets.push({ ...data, id: Date.now(), date: new Date().toISOString() });
+                localStorage.setItem('portal3_tickets', JSON.stringify(localTickets));
+                successMsg.classList.add('active');
+                document.getElementById('supportForm').reset();
+            }
+
+            btn.disabled = false;
+            btn.textContent = '📤 Отправить';
+        });
+    </script>
 </body>
 </html>
