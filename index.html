@@ -6,6 +6,157 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal 3 — Главная</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* === МОДАЛЬНЫЕ ОКНА === */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .modal-overlay.active { display: block; }
+        .modal-overlay::before {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+        }
+
+        .modal {
+            background: #1a1a2e;
+            border: 2px solid #ff6b00;
+            border-radius: 20px;
+            width: 92%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: inline-flex;
+            flex-direction: column;
+            box-shadow: 
+                0 0 0 3px rgba(255, 107, 0, 0.3),
+                0 0 25px rgba(255, 107, 0, 0.2),
+                0 0 50px rgba(255, 107, 0, 0.1);
+            vertical-align: middle;
+            text-align: left;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #ff6b00, #ff8533);
+            padding: 1rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .modal-header h3 {
+            color: #000;
+            font-size: 1rem;
+            margin: 0;
+            font-weight: bold;
+            word-break: break-word;
+        }
+        .modal-close {
+            background: rgba(0,0,0,0.2);
+            border: none;
+            color: #000;
+            font-size: 1.3rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+            margin-left: 0.5rem;
+        }
+        .modal-close:hover { background: rgba(0,0,0,0.4); }
+
+        .modal-body {
+            padding: 1.2rem;
+            overflow-y: auto;
+            line-height: 1.7;
+            color: #a0d2eb;
+            font-size: 0.9rem;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .modal-body h4 {
+            color: #ff6b00;
+            margin: 1.2rem 0 0.5rem;
+            font-size: 1rem;
+        }
+        .modal-body h4:first-child { margin-top: 0; }
+        .modal-body p { margin-bottom: 0.7rem; }
+        .modal-body strong { color: #e0e0e0; }
+        .modal-body ul { margin-left: 1.2rem; margin-bottom: 0.8rem; }
+        .modal-body li { margin-bottom: 0.3rem; }
+        .modal-body hr {
+            border: none;
+            border-top: 2px solid #ff6b00;
+            margin: 1.2rem 0;
+            border-radius: 1px;
+        }
+        .modal-body a { color: #00d4ff; text-decoration: none; }
+        .modal-body a:hover { text-decoration: underline; }
+
+        .modal-footer {
+            padding: 1rem 1.2rem;
+            border-top: 1px solid rgba(255,107,0,0.3);
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .modal-footer button {
+            background: linear-gradient(135deg, #ff6b00, #ff8533);
+            color: #000;
+            border: none;
+            padding: 0.7rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            max-width: 200px;
+        }
+        .modal-footer button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255,107,0,0.4);
+        }
+
+        /* === ФУТЕР-ССЫЛКИ === */
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.6rem;
+        }
+        .footer-links a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 50px;
+            border: 1px solid rgba(0,212,255,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .footer-links a:hover {
+            background: rgba(0,212,255,0.1);
+            border-color: #00d4ff;
+        }
+        .footer-copy {
+            color: #666;
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -22,7 +173,7 @@
         </nav>
 
         <section class="section">
-            <h2 style="color: red;">Внимание! Игра ещë находится на стадии разработки! О всех багах и ошибках пишите на почту техподдержки или группу в ТГ и Дискорд!</p>
+            <h2 style="color: red;">Внимание! Игра ещë находится на стадии разработки! О всех багах и ошибках пишите на почту техподдержки или группу в ТГ и Дискорд!</h2>
             <h2>🎮 Portal 3: Fan Edition</h2>
             <p>Полноценная фанатская игра с кооперативом, ИИ-напарником Чел, неотключаемой GLaDOS, 4 роботами, временными порталами и десятками пасхалок.</p>
             <p>Доступна для Windows, Android и macOS.</p>
@@ -30,8 +181,150 @@
             <a href="play.html" class="btn-game secondary">▶ Играть в браузере</a>
         </section>
 
-        <footer class="footer">© 2026 — SWILL · Portal 3: Fan Edition</footer>
+        <footer class="footer">
+            <div class="footer-links">
+                <a onclick="openModal('license'); return false;">📄 Лицензия</a>
+                <a onclick="openModal('disclaimer'); return false;">🛡️ Отказ от ответственности</a>
+                <a href="support.html">📞 Поддержка</a>
+                <a href="https://github.com/GFFRGOOGLE/portal-3-fan-edition" target="_blank">💻 GitHub</a>
+            </div>
+            <div class="footer-copy">© 2026 — GFFRGOOGLE · Portal 3: Fan Edition</div>
+        </footer>
     </div>
     <script src="script.js"></script>
+    <script>
+        function openModal(id) {
+            document.getElementById('modal-' + id).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeModal(id) {
+            document.getElementById('modal-' + id).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+
+    <!-- МОДАЛКА: ЛИЦЕНЗИЯ -->
+    <div class="modal-overlay" id="modal-license">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>📄 ПРОПРИЕТАРНАЯ ЛИЦЕНЗИЯ</h3>
+                <button class="modal-close" onclick="closeModal('license')">×</button>
+            </div>
+            <div class="modal-body">
+                <h4>Русский</h4>
+                <p><strong>Portal 3: Fan Edition</strong></p>
+                <p>Copyright © 2026 GFFRGOOGLE. Все права защищены.</p>
+
+                <p><strong>1. Все права сохраняются.</strong> Автор сохраняет за собой все права на данное программное обеспечение, исходный код, дизайн, графические материалы, звуки, тексты и любые другие компоненты проекта.</p>
+
+                <p><strong>2. Письменное разрешение.</strong> Любое использование, копирование, модификация, распространение, публикация, сублицензирование, слияние с другими проектами, коммерческое или некоммерческое использование данного кода и материалов <strong>строго запрещены без предварительного письменного разрешения автора</strong>.</p>
+
+                <p><strong>3. Порядок получения разрешения.</strong> Для получения разрешения необходимо направить письменный запрос автору по контактным данным, указанным в репозитории. Автор оставляет за собой право отказать в предоставлении разрешения без объяснения причин.</p>
+
+                <p><strong>4. Интеллектуальная собственность Valve.</strong> Все торговые марки, персонажи, названия, логотипы и элементы вселенной Portal являются собственностью Valve Corporation. Их использование в данном проекте осуществляется в рамках фанатского творчества и не претендует на права собственности.</p>
+
+                <p><strong>5. Отсутствие гарантий.</strong> Проект предоставляется «как есть». Автор не гарантирует корректную работу, отсутствие ошибок или соответствие каким-либо требованиям.</p>
+
+                <p><strong>6. Ответственность.</strong> Автор не несёт ответственности за любой ущерб, причинённый использованием данного проекта.</p>
+
+                <hr>
+
+                <h4>English</h4>
+                <p><strong>Portal 3: Fan Edition</strong></p>
+                <p>Copyright © 2026 GFFRGOOGLE. All rights reserved.</p>
+
+                <p><strong>1. All rights reserved.</strong> The author retains all rights to this software, source code, design, graphics, sounds, texts, and any other project components.</p>
+
+                <p><strong>2. Written permission required.</strong> Any use, copying, modification, distribution, publication, sublicensing, merging with other projects, commercial or non-commercial use of this code and materials is <strong>strictly prohibited without prior written permission from the author</strong>.</p>
+
+                <p><strong>3. Permission procedure.</strong> To obtain permission, a written request must be sent to the author using the contact details provided in the repository. The author reserves the right to deny permission without explanation.</p>
+
+                <p><strong>4. Valve intellectual property.</strong> All trademarks, characters, names, logos, and elements of the Portal universe are the property of Valve Corporation. Their use in this project is within the scope of fan creativity and does not claim ownership.</p>
+
+                <p><strong>5. No warranties.</strong> The project is provided "as is". The author does not guarantee correct operation, absence of errors, or compliance with any requirements.</p>
+
+                <p><strong>6. Liability.</strong> The author is not liable for any damage caused by the use of this project.</p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModal('license')">Понятно / OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА: ОТКАЗ -->
+    <div class="modal-overlay" id="modal-disclaimer">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>🛡️ ОТКАЗ ОТ ОТВЕТСТВЕННОСТИ</h3>
+                <button class="modal-close" onclick="closeModal('disclaimer')">×</button>
+            </div>
+            <div class="modal-body">
+                <h4>Русский</h4>
+
+                <p><strong>1. Неофициальный статус.</strong> «Portal 3: Fan Edition» — это фанатский проект, не имеющий никакого отношения к Valve Corporation. Valve не участвовала в создании, не одобряла и не спонсировала данный проект.</p>
+
+                <p><strong>2. Интеллектуальная собственность.</strong> Все торговые марки, персонажи, названия, логотипы и элементы вселенной Portal являются собственностью Valve Corporation. Их использование в данном проекте осуществляется в рамках фанатского творчества и не претендует на права собственности.</p>
+
+                <p><strong>3. Отсутствие гарантий.</strong> Проект предоставляется «как есть» (as is). Авторы не гарантируют корректную работу на всех устройствах, отсутствие ошибок, багов, вылетов или потери данных.</p>
+
+                <p><strong>4. Риски использования.</strong> Пользователь использует данный проект на свой страх и риск. Авторы не несут ответственности за:</p>
+                <ul>
+                    <li>любой ущерб, причинённый устройству или данным;</li>
+                    <li>проблемы, связанные с совместимостью;</li>
+                    <li>действия третьих лиц;</li>
+                    <li>любые косвенные, случайные или штрафные убытки.</li>
+                </ul>
+
+                <p><strong>5. Возрастные ограничения.</strong> Проект может содержать контент, не рекомендованный для лиц младше определённого возраста. Родители несут ответственность за контроль использования несовершеннолетними.</p>
+
+                <p><strong>6. Изменения.</strong> Авторы оставляют за собой право в любое время изменить, приостановить или прекратить поддержку проекта без предварительного уведомления.</p>
+
+                <p><strong>7. Контакт.</strong> По всем вопросам: <a href="support.html">страница поддержки</a></p>
+
+                <hr>
+
+                <h4>English</h4>
+
+                <p><strong>1. Unofficial status.</strong> "Portal 3: Fan Edition" is a fan project with no affiliation to Valve Corporation. Valve was not involved in the creation, endorsement, or sponsorship of this project.</p>
+
+                <p><strong>2. Intellectual property.</strong> All trademarks, characters, names, logos, and elements of the Portal universe are the property of Valve Corporation. Their use in this project is within the scope of fan creativity and does not claim ownership.</p>
+
+                <p><strong>3. No warranties.</strong> The project is provided "as is". The authors do not guarantee correct operation on all devices, absence of errors, bugs, crashes, or data loss.</p>
+
+                <p><strong>4. Usage risks.</strong> The user uses this project at their own risk. The authors are not liable for:</p>
+                <ul>
+                    <li>any damage caused to the device or data;</li>
+                    <li>compatibility issues;</li>
+                    <li>actions of third parties;</li>
+                    <li>any indirect, incidental, or punitive damages.</li>
+                </ul>
+
+                <p><strong>5. Age restrictions.</strong> The project may contain content not recommended for persons below a certain age. Parents are responsible for monitoring use by minors.</p>
+
+                <p><strong>6. Changes.</strong> The authors reserve the right to change, suspend, or discontinue project support at any time without prior notice.</p>
+
+                <p><strong>7. Contact.</strong> For all inquiries: <a href="support.html">support page</a></p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModal('disclaimer')">Понятно / OK</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
