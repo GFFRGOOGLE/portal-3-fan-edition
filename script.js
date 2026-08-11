@@ -1,189 +1,194 @@
 // ============================================================
-// 1. ПОЛНОЦЕННАЯ КАПЧА ПРИ ЗАХОДЕ НА САЙТ
+// ЗАЩИТА ОТ ПРОСМОТРА И КОПИРОВАНИЯ КОДА
+// ============================================================
+(function protectCode() {
+    'use strict';
+    
+    // Блокировка прямого доступа к файлам
+    const blockedExtensions = ['.js', '.css', '.html', '.htm', '.txt', '.json', '.xml'];
+    const currentUrl = window.location.href.toLowerCase();
+    
+    for (let ext of blockedExtensions) {
+        if (currentUrl.endsWith(ext)) {
+            document.documentElement.innerHTML = `
+                <head><meta charset="UTF-8"><title>🚫 Доступ запрещён</title></head>
+                <body style="background:#0b0e14;color:#f5a623;text-align:center;padding-top:20%;font-family:sans-serif;">
+                    <h1>🚫 Доступ запрещён</h1>
+                    <p>Прямой доступ к файлам запрещён</p>
+                    <p style="color:#666;font-size:0.9rem;margin-top:20px;">Portal 3: Fan Edition © 2026</p>
+                </body>
+            `;
+            throw new Error('Direct file access blocked');
+        }
+    }
+
+    // Блокировка DevTools
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12') { e.preventDefault(); return false; }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'u') { e.preventDefault(); return false; }
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i','j','c','k'].includes(e.key.toLowerCase())) { 
+            e.preventDefault(); return false; 
+        }
+    });
+
+    // Блокировка правого клика
+    document.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
+
+    // Блокировка выделения
+    document.addEventListener('selectstart', e => { e.preventDefault(); return false; });
+    document.addEventListener('copy', e => { e.preventDefault(); return false; });
+    document.addEventListener('cut', e => { e.preventDefault(); return false; });
+
+    // Обнаружение DevTools
+    let devtoolsOpen = false;
+    const threshold = 160;
+    setInterval(() => {
+        const widthDiff = window.outerWidth - window.innerWidth;
+        const heightDiff = window.outerHeight - window.innerHeight;
+        if ((widthDiff > threshold || heightDiff > threshold) && !devtoolsOpen) {
+            devtoolsOpen = true;
+            document.body.innerHTML = `
+                <div style="background:#0b0e14;color:#f5a623;text-align:center;padding-top:20%;height:100vh;font-family:sans-serif;">
+                    <h1>🚫 DevTools обнаружены</h1>
+                    <p>Доступ к сайту заблокирован</p>
+                </div>
+            `;
+        }
+    }, 500);
+
+    // Защита от iframe
+    if (window.top !== window.self) window.top.location = window.self.location;
+
+    // Anti-debugger
+    setInterval(() => { debugger; }, 100);
+    
+    // Console warning
+    console.log('%c🚫', 'font-size:50px');
+    console.log('%cЭтот сайт защищён. Копирование кода запрещено.', 'color:#f5a623;font-size:14px');
+    console.log('%cPortal 3: Fan Edition © 2026', 'color:#666;font-size:12px');
+})();
+
+// ============================================================
+// 1. КАПЧА ПРИ ЗАХОДЕ НА САЙТ
 // ============================================================
 (function() {
     if (sessionStorage.getItem('captchaPassed') === 'true') return;
 
-    const CONFIG = {
-        length: 6,
-        width: 320,
-        height: 100,
-        fontSize: 36,
-        noiseDots: 150,
-        noiseLines: 6,
-        noiseRects: 80,
-        colors: {
-            bg: '#1a1f2a',
-            primary: '#f5a623',
-            secondary: '#8af0ff',
-            error: '#ff6666'
-        }
-    };
+    const ALLOWED_AGENTS = [
+        'Googlebot','Google-Extended','Bingbot','Slurp','DuckDuckBot',
+        'YandexBot','YandexImages','YandexVideo',
+        'vkShare','TelegramBot','Discordbot','Twitterbot',
+        'facebookexternalhit','Instagram','TikTokBot',
+        'ChatGPT-User','GPTBot','Claude-Web','PerplexityBot',
+        'Kimi','DeepSeek','Ella','MailRuBot',
+        'archive.org_bot','ia_archiver',
+        'Applebot','LinkedInBot','Pinterestbot','Redditbot','WhatsApp',
+    ];
 
-    function generateCaptcha() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz23456789';
-        let result = '';
-        for (let i = 0; i < CONFIG.length; i++) {
-            result += chars[Math.floor(Math.random() * chars.length)];
+    const BLOCKED_AGENTS = [
+        'MJ12bot','AhrefsBot','SemrushBot','DotBot','DataForSeoBot',
+        'SEMrush','rogerbot','Screaming Frog','BLEXBot','MegaIndex.ru',
+        'serpstatbot','SiteCheckerBot','Uptimebot',
+        'Python-requests','curl','wget','Go-http-client','Java/','scrapy',
+    ];
+
+    function checkUserAgent() {
+        const ua = navigator.userAgent || '';
+        const lowerUA = ua.toLowerCase();
+        for (let bot of BLOCKED_AGENTS) {
+            if (lowerUA.includes(bot.toLowerCase())) return false;
         }
-        return result;
+        const isBot = /bot|crawler|spider|archiver/i.test(ua);
+        if (isBot) {
+            for (let agent of ALLOWED_AGENTS) {
+                if (lowerUA.includes(agent.toLowerCase())) return true;
+            }
+            return false;
+        }
+        return true;
     }
 
-    function randomColor(opacity = 'ff') {
-        return Math.random() > 0.5
-            ? CONFIG.colors.primary + opacity
-            : CONFIG.colors.secondary + opacity;
+    function checkBotBehavior() {
+        if (navigator.webdriver) return false;
+        if (window.outerWidth === 0 && window.outerHeight === 0) return false;
+        return true;
     }
 
-    function drawCaptcha(text, canvas) {
-        const ctx = canvas.getContext('2d');
-        const w = canvas.width, h = canvas.height;
-
-        ctx.fillStyle = CONFIG.colors.bg;
-        ctx.fillRect(0, 0, w, h);
-
-        for (let i = 0; i < CONFIG.noiseDots; i++) {
-            ctx.fillStyle = randomColor(Math.random() > 0.7 ? '' : '44');
-            ctx.beginPath();
-            ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 2 + 0.5, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        for (let i = 0; i < CONFIG.noiseLines; i++) {
-            ctx.strokeStyle = randomColor('44');
-            ctx.lineWidth = Math.random() * 2 + 1;
-            ctx.beginPath();
-            ctx.moveTo(Math.random() * w, Math.random() * h);
-            ctx.lineTo(Math.random() * w, Math.random() * h);
-            ctx.stroke();
-        }
-
-        const chars = text.split('');
-        const spacing = CONFIG.fontSize + 6;
-        const totalWidth = chars.length * spacing;
-        const startX = (w - totalWidth) / 2 + CONFIG.fontSize / 2;
-
-        chars.forEach((ch, i) => {
-            const x = startX + i * spacing + (Math.random() - 0.5) * 8;
-            const y = h / 2 + (Math.random() - 0.5) * 12;
-            const angle = (Math.random() - 0.5) * 0.4;
-            const isLowercase = ch === ch.toLowerCase() && ch !== ch.toUpperCase();
-            const fontWeight = isLowercase ? 'normal' : 'bold';
-            ctx.font = `${fontWeight} ${CONFIG.fontSize}px "Courier New", monospace`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.rotate(angle);
-            ctx.fillStyle = randomColor();
-            ctx.shadowColor = CONFIG.colors.primary + '44';
-            ctx.shadowBlur = 10;
-            ctx.fillText(ch, 0, 0);
-            ctx.restore();
-        });
-
-        for (let i = 0; i < CONFIG.noiseRects; i++) {
-            ctx.fillStyle = randomColor('33');
-            ctx.fillRect(Math.random() * w, Math.random() * h, Math.random() * 4 + 1, Math.random() * 2 + 0.5);
-        }
+    function checkHoneypot() {
+        const trap = document.querySelector('input[name="trap"]');
+        return !(trap && trap.value !== '');
     }
+
+    let mathNum1, mathNum2, mathCorrect;
+    function generateMath() {
+        mathNum1 = Math.floor(Math.random() * 15) + 1;
+        mathNum2 = Math.floor(Math.random() * 15) + 1;
+        mathCorrect = mathNum1 + mathNum2;
+        return `Сколько будет ${mathNum1} + ${mathNum2}?`;
+    }
+
+    const CONFIG = { colors: { bg:'#1a1f2a', primary:'#f5a623', secondary:'#8af0ff', error:'#ff6666' }};
 
     const overlay = document.createElement('div');
     overlay.id = 'captchaOverlay';
-    overlay.style.cssText = `
-        position: fixed; top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.88);
-        backdrop-filter: blur(6px);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        flex-direction: column;
-        transition: opacity 0.5s ease;
-    `;
+    overlay.style.cssText = `position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);backdrop-filter:blur(6px);display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;transition:opacity 0.5s ease;`;
 
     const box = document.createElement('div');
-    box.style.cssText = `
-        background: #141a24;
-        padding: 40px 30px;
-        border-radius: 24px;
-        border: 2px solid ${CONFIG.colors.primary};
-        max-width: 420px;
-        width: 90%;
-        text-align: center;
-        box-shadow: 0 0 60px ${CONFIG.colors.primary}33;
-    `;
+    box.style.cssText = `background:#141a24;padding:40px 30px;border-radius:24px;border:2px solid ${CONFIG.colors.primary};max-width:420px;width:90%;text-align:center;box-shadow:0 0 60px ${CONFIG.colors.primary}33;`;
 
     box.innerHTML = `
-        <h2 style="color:${CONFIG.colors.primary}; font-weight:300; letter-spacing:3px; margin-bottom:10px;">🔒 Проверка</h2>
-        <p style="color:#aaa; margin-bottom:15px;">Введите символы с картинки (с учётом регистра)</p>
-        <canvas id="captchaCanvas" width="${CONFIG.width}" height="${CONFIG.height}" style="border-radius:12px; border:1px solid ${CONFIG.colors.primary}55; width:100%; height:auto; background:${CONFIG.colors.bg};"></canvas>
-        <input type="text" id="captchaInput" placeholder="Введите код" maxlength="${CONFIG.length}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="
-            width:100%; padding:12px; border-radius:8px; border:1px solid ${CONFIG.colors.primary}55;
-            background:${CONFIG.colors.bg}; color:#fff; font-size:1.2rem; text-align:center; margin:15px 0; outline:none;
-        ">
-        <div style="display:flex; gap:10px; justify-content:center;">
-            <button id="captchaRefresh" style="
-                background:rgba(255,255,255,0.05); border:1px solid ${CONFIG.colors.primary}55; color:#ccc;
-                padding:10px 20px; border-radius:8px; cursor:pointer; transition:0.3s;
-            ">🔄 Обновить</button>
-            <button id="captchaSubmit" style="
-                background:${CONFIG.colors.primary}; color:#0b0e14; border:none; padding:10px 30px;
-                border-radius:40px; font-size:1.1rem; font-weight:600; cursor:pointer; transition:0.3s;
-            ">Войти</button>
+        <h2 style="color:${CONFIG.colors.primary};font-weight:300;letter-spacing:3px;margin-bottom:10px;">🔒 Проверка</h2>
+        <p style="color:#aaa;margin-bottom:15px;">Введите ответ на задачу</p>
+        <input type="text" name="trap" style="display:none" tabindex="-1" autocomplete="off">
+        <div id="mathQuestion" style="background:${CONFIG.colors.bg};padding:20px;border-radius:12px;border:1px solid ${CONFIG.colors.primary}55;color:${CONFIG.colors.primary};font-size:1.5rem;font-family:'Courier New',monospace;margin-bottom:15px;">Загрузка...</div>
+        <input type="number" id="mathInput" placeholder="Введите ответ" autocomplete="off" style="width:100%;padding:12px;border-radius:8px;border:1px solid ${CONFIG.colors.primary}55;background:${CONFIG.colors.bg};color:#fff;font-size:1.2rem;text-align:center;margin:15px 0;outline:none;">
+        <div style="display:flex;gap:10px;justify-content:center;">
+            <button id="mathRefresh" style="background:rgba(255,255,255,0.05);border:1px solid ${CONFIG.colors.primary}55;color:#ccc;padding:10px 20px;border-radius:8px;cursor:pointer;transition:0.3s;">🔄 Обновить</button>
+            <button id="mathSubmit" style="background:${CONFIG.colors.primary};color:#0b0e14;border:none;padding:10px 30px;border-radius:40px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:0.3s;">Войти</button>
         </div>
-        <div id="captchaError" style="color:${CONFIG.colors.error}; margin-top:10px; font-size:0.9rem; min-height:1.5em;"></div>
+        <div id="mathError" style="color:${CONFIG.colors.error};margin-top:10px;font-size:0.9rem;min-height:1.5em;"></div>
     `;
 
     overlay.appendChild(box);
     document.body.prepend(overlay);
 
-    const canvas = document.getElementById('captchaCanvas');
-    const input = document.getElementById('captchaInput');
-    const submitBtn = document.getElementById('captchaSubmit');
-    const refreshBtn = document.getElementById('captchaRefresh');
-    const errorEl = document.getElementById('captchaError');
+    const mathQuestion = document.getElementById('mathQuestion');
+    const mathInput = document.getElementById('mathInput');
+    const submitBtn = document.getElementById('mathSubmit');
+    const refreshBtn = document.getElementById('mathRefresh');
+    const errorEl = document.getElementById('mathError');
 
-    let currentText = generateCaptcha();
-    drawCaptcha(currentText, canvas);
+    mathQuestion.textContent = generateMath();
 
-    function refreshCaptcha() {
-        currentText = generateCaptcha();
-        drawCaptcha(currentText, canvas);
-        input.value = '';
+    function refreshMath() {
+        mathQuestion.textContent = generateMath();
+        mathInput.value = '';
         errorEl.textContent = '';
-        input.focus();
+        mathInput.focus();
     }
 
-    function checkCaptcha() {
-        const userInput = input.value.trim();
-        if (userInput === currentText) {
-            sessionStorage.setItem('captchaPassed', 'true');
-            overlay.style.opacity = '0';
-            setTimeout(() => overlay.remove(), 500);
-        } else {
-            errorEl.textContent = '❌ Неверный код, попробуйте снова.';
-            refreshCaptcha();
-        }
+    function checkMath() {
+        if (!checkHoneypot()) { errorEl.textContent = '🚫 Доступ запрещён.'; return; }
+        const userAnswer = parseInt(mathInput.value);
+        if (isNaN(userAnswer)) { errorEl.textContent = '❌ Введите число'; return; }
+        if (userAnswer !== mathCorrect) { errorEl.textContent = '❌ Неверно, попробуйте снова'; refreshMath(); return; }
+        sessionStorage.setItem('captchaPassed', 'true');
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 500);
     }
 
-    refreshBtn.addEventListener('click', refreshCaptcha);
-    submitBtn.addEventListener('click', checkCaptcha);
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') checkCaptcha();
-    });
+    refreshBtn.addEventListener('click', refreshMath);
+    submitBtn.addEventListener('click', checkMath);
+    mathInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkMath(); });
+    mathInput.addEventListener('paste', e => { e.preventDefault(); errorEl.textContent = '⚠️ Вставка запрещена'; });
+    overlay.addEventListener('click', e => { if (e.target === overlay) mathInput.focus(); });
+    mathInput.focus();
 
-    input.addEventListener('paste', (e) => {
-        e.preventDefault();
-        errorEl.textContent = '⚠️ Вставка запрещена. Введите код вручную.';
-    });
-
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) input.focus();
-    });
-
-    input.focus();
+    if (!checkUserAgent() || !checkBotBehavior()) {
+        errorEl.textContent = '🚫 Доступ запрещён.';
+        mathInput.disabled = true;
+        submitBtn.disabled = true;
+    }
 })();
 
 // ============================================================
@@ -192,15 +197,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const links = document.querySelectorAll('.menu a');
     const current = window.location.pathname.split('/').pop() || 'index.html';
-    links.forEach(link => {
-        if (link.getAttribute('href') === current) {
-            link.classList.add('active');
-        }
-    });
+    links.forEach(link => { if (link.getAttribute('href') === current) link.classList.add('active'); });
 });
 
 // ============================================================
-// 3. КАПЧА ФОРМЫ (ПЕРЕД ОТПРАВКОЙ)
+// 3. КАПЧА ФОРМЫ
 // ============================================================
 const FormCaptcha = (function() {
     const canvas = document.getElementById('formCaptchaCanvas');
@@ -208,10 +209,7 @@ const FormCaptcha = (function() {
     const errorEl = document.getElementById('formCaptchaError');
     if (!canvas || !input) return null;
 
-    const CFG = {
-        length: 5,
-        colors: { bg: '#1a1f2a', primary: '#f5a623', secondary: '#8af0ff' }
-    };
+    const CFG = { length: 5, colors: { bg:'#1a1f2a', primary:'#f5a623', secondary:'#8af0ff' }};
 
     function gen() {
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -220,71 +218,41 @@ const FormCaptcha = (function() {
         return r;
     }
 
-    function randCol(a) {
-        return (Math.random() > 0.5 ? CFG.colors.primary : CFG.colors.secondary) + a;
-    }
+    function randCol(a) { return (Math.random() > 0.5 ? CFG.colors.primary : CFG.colors.secondary) + a; }
 
     function draw(text) {
         const ctx = canvas.getContext('2d');
         const w = canvas.width, h = canvas.height;
-        ctx.fillStyle = CFG.colors.bg;
-        ctx.fillRect(0, 0, w, h);
-
+        ctx.fillStyle = CFG.colors.bg; ctx.fillRect(0, 0, w, h);
         for (let i = 0; i < 80; i++) {
             ctx.fillStyle = randCol('33');
-            ctx.beginPath();
-            ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 1.5, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(Math.random()*w, Math.random()*h, Math.random()*1.5, 0, Math.PI*2); ctx.fill();
         }
         for (let i = 0; i < 4; i++) {
-            ctx.strokeStyle = randCol('44');
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(Math.random() * w, Math.random() * h);
-            ctx.lineTo(Math.random() * w, Math.random() * h);
-            ctx.stroke();
+            ctx.strokeStyle = randCol('44'); ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(Math.random()*w, Math.random()*h); ctx.lineTo(Math.random()*w, Math.random()*h); ctx.stroke();
         }
-
-        const spacing = 30;
-        const startX = (w - text.length * spacing) / 2 + 15;
+        const spacing = 30, startX = (w - text.length * spacing) / 2 + 15;
         text.split('').forEach((ch, i) => {
             ctx.save();
-            ctx.translate(startX + i * spacing + (Math.random() - 0.5) * 6, h / 2 + (Math.random() - 0.5) * 8);
-            ctx.rotate((Math.random() - 0.5) * 0.5);
-            ctx.font = `bold 28px "Courier New", monospace`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = randCol('ff');
-            ctx.fillText(ch, 0, 0);
-            ctx.restore();
+            ctx.translate(startX + i*spacing + (Math.random()-0.5)*6, h/2 + (Math.random()-0.5)*8);
+            ctx.rotate((Math.random()-0.5)*0.5);
+            ctx.font = `bold 28px "Courier New",monospace`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = randCol('ff');
+            ctx.fillText(ch, 0, 0); ctx.restore();
         });
     }
 
-    let current = gen();
-    draw(current);
+    let current = gen(); draw(current);
 
-    function refresh() {
-        current = gen();
-        draw(current);
-        input.value = '';
-        errorEl.textContent = '';
-    }
-
+    function refresh() { current = gen(); draw(current); input.value = ''; errorEl.textContent = ''; }
     canvas.addEventListener('click', refresh);
-    input.addEventListener('paste', (e) => {
-        e.preventDefault();
-        errorEl.textContent = '⚠️ Вставка запрещена';
-    });
+    input.addEventListener('paste', e => { e.preventDefault(); errorEl.textContent = '⚠️ Вставка запрещена'; });
 
     return {
         verify: function() {
-            if (input.value.trim() !== current) {
-                errorEl.textContent = '❌ Неверный код проверки';
-                refresh();
-                return false;
-            }
-            errorEl.textContent = '';
-            return true;
+            if (input.value.trim() !== current) { errorEl.textContent = '❌ Неверный код проверки'; refresh(); return false; }
+            errorEl.textContent = ''; return true;
         }
     };
 })();
@@ -292,7 +260,6 @@ const FormCaptcha = (function() {
 // ============================================================
 // 4. ФОРМА ОБРАТНОЙ СВЯЗИ (EmailJS)
 // ============================================================
-
 const EMAILJS_CONFIG = {
     publicKey: 'RAhvhHKbPdcnskHlX',
     serviceId: 'service_wusoujo',
@@ -311,26 +278,16 @@ const supportForm = document.getElementById('supportForm');
 if (supportForm) {
     supportForm.addEventListener('submit', function(e) {
         e.preventDefault();
-
         const btn = document.getElementById('submitBtn');
         const formMessage = document.getElementById('formMessage');
 
-        // Проверка капчи формы
-        if (FormCaptcha && !FormCaptcha.verify()) {
-            formMessage.textContent = '';
-            return;
-        }
-
+        if (FormCaptcha && !FormCaptcha.verify()) { formMessage.textContent = ''; return; }
         if (typeof emailjs === 'undefined') {
             formMessage.textContent = '❌ Сервис временно недоступен. Обновите страницу.';
-            formMessage.style.color = '#ff6666';
-            return;
+            formMessage.style.color = '#ff6666'; return;
         }
 
-        btn.disabled = true;
-        btn.textContent = 'Отправка...';
-        formMessage.textContent = '';
-
+        btn.disabled = true; btn.textContent = 'Отправка...'; formMessage.textContent = '';
         const templateParams = {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
@@ -346,12 +303,8 @@ if (supportForm) {
             })
             .catch((err) => {
                 formMessage.textContent = '❌ Ошибка отправки. Попробуйте позже.';
-                formMessage.style.color = '#ff6666';
-                console.error('EmailJS error:', err);
+                formMessage.style.color = '#ff6666'; console.error('EmailJS error:', err);
             })
-            .finally(() => {
-                btn.disabled = false;
-                btn.textContent = 'Отправить';
-            });
+            .finally(() => { btn.disabled = false; btn.textContent = 'Отправить'; });
     });
 }
