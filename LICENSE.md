@@ -1,4 +1,4 @@
-   =
+=
                     PORTAL 3: FAN EDITION — ЛИЦЕНЗИЯ
   =
 
