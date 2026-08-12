@@ -156,6 +156,121 @@
             color: #666;
             font-size: 0.8rem;
         }
+
+        /* === СТИЛИ БАННЕРА TM VPN === */
+        .tm-vpn-banner {
+            background: linear-gradient(90deg, #1a1a3e 0%, #0d0d2b 50%, #1a1a3e 100%);
+            border: 2px solid #ff6b00;
+            border-radius: 14px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            max-width: 600px;
+            margin: 16px auto;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        .tm-vpn-banner:hover {
+            box-shadow: 0 0 30px rgba(255,107,0,0.25);
+            transform: scale(1.01);
+        }
+        .tm-vpn-banner::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff6b00, transparent);
+            opacity: 0.6;
+        }
+        .tm-vpn-banner-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+        .tm-vpn-banner-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, #ff6b00, #ff8533);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .tm-vpn-banner-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+            flex-wrap: wrap;
+        }
+        .tm-vpn-banner-title span {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .tm-vpn-banner-badge {
+            background: #00ff88;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .tm-vpn-banner-ad {
+            background: rgba(255,107,0,0.2);
+            color: #ff8533;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .tm-vpn-banner-desc {
+            color: #a0a0c0;
+            margin: 0;
+            font-size: 12px;
+        }
+        .tm-vpn-banner-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .tm-vpn-banner-btn {
+            background: linear-gradient(135deg, #ff6b00, #ff8533);
+            color: #000;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 13px;
+            white-space: nowrap;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .tm-vpn-banner-btn-outline {
+            background: transparent;
+            color: #ff6b00;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 13px;
+            white-space: nowrap;
+            text-decoration: none;
+            display: inline-block;
+            border: 2px solid #ff6b00;
+        }
+        @media (max-width: 600px) {
+            .tm-vpn-banner { flex-direction: column; text-align: center; padding: 16px; }
+            .tm-vpn-banner-left { flex-direction: column; }
+            .tm-vpn-banner-right { width: 100%; justify-content: center; flex-wrap: wrap; }
+            .tm-vpn-banner-btn, .tm-vpn-banner-btn-outline { flex: 1; text-align: center; }
+        }
+        /* === /СТИЛИ БАННЕРА TM VPN === */
     </style>
 </head>
 <body>
@@ -172,6 +287,26 @@
             <a href="chat.html">Чат</a>
         </nav>
 
+        <!-- === БАННЕР TM VPN === -->
+        <div class="tm-vpn-banner">
+            <div class="tm-vpn-banner-left">
+                <div class="tm-vpn-banner-icon">🛡️</div>
+                <div>
+                    <div class="tm-vpn-banner-title">
+                        <span>TM VPN</span>
+                        <span class="tm-vpn-banner-badge">3 дня FREE</span>
+                        <span class="tm-vpn-banner-ad">Реклама</span>
+                    </div>
+                    <p class="tm-vpn-banner-desc">Обходи блокировки • Антиглушилки • Розыгрыш iPhone 17 Pro</p>
+                </div>
+            </div>
+            <div class="tm-vpn-banner-right">
+                <a href="ad-tmvpn.html" class="tm-vpn-banner-btn-outline">Подробнее</a>
+                <a href="https://t.me/the_Tm_vpnbot?start=REF8967927362" target="_blank" class="tm-vpn-banner-btn">Подключить VPN</a>
+            </div>
+        </div>
+        <!-- === /БАННЕР TM VPN === -->
+
         <section class="section">
             <h2 style="color: red;">Внимание! Игра ещë находится на стадии разработки! О всех багах и ошибках пишите на почту техподдержки или группу в ТГ и Дискорд!</h2>
             <h2>🎮 Portal 3: Fan Edition</h2>
@@ -186,7 +321,6 @@
                 <a onclick="openModal('license'); return false;">📄 Лицензия</a>
                 <a onclick="openModal('disclaimer'); return false;">🛡️ Отказ от ответственности</a>
                 <a href="support.html">📞 Поддержка</a>
-                <a href="https://github.com/GFFRGOOGLE/portal-3-fan-edition" target="_blank">💻 GitHub</a>
             </div>
             <div class="footer-copy">© 2026 — GFFRGOOGLE · Portal 3: Fan Edition</div>
         </footer>
@@ -223,51 +357,53 @@
     <div class="modal-overlay" id="modal-license">
         <div class="modal">
             <div class="modal-header">
-                <h3>📄 ПРОПРИЕТАРНАЯ ЛИЦЕНЗИЯ</h3>
+                <h3>📄 ЛИЦЕНЗИЯ</h3>
                 <button class="modal-close" onclick="closeModal('license')">×</button>
             </div>
             <div class="modal-body">
-                <h4>Русский</h4>
                 <p><strong>Portal 3: Fan Edition</strong></p>
                 <p>Copyright © 2026 GFFRGOOGLE. Все права защищены.</p>
 
-                <p><strong>1. Все права сохраняются.</strong> Автор сохраняет за собой все права на данное программное обеспечение, исходный код, дизайн, графические материалы, звуки, тексты и любые другие компоненты проекта.</p>
+                <h4>1. ИСПОЛЬЗОВАНИЕ</h4>
+                <p>Разрешается:</p>
+                <ul>
+                    <li>Играть в игру</li>
+                    <li>Распространять ссылку на официальный сайт</li>
+                    <li>Создавать фанатский контент (видео, стримы, арты)</li>
+                </ul>
 
-                <p><strong>2. Письменное разрешение.</strong> Любое использование, копирование, модификация, распространение, публикация, сублицензирование, слияние с другими проектами, коммерческое или некоммерческое использование данного кода и материалов <strong>строго запрещены без предварительного письменного разрешения автора</strong>.</p>
+                <h4>2. ЗАПРЕЩЕНО</h4>
+                <ul>
+                    <li>Копировать, модифицировать или распространять код без разрешения</li>
+                    <li>Использовать код в коммерческих целях</li>
+                    <li>Создавать форки без согласования с автором</li>
+                    <li>Обходить защиту сайта</li>
+                </ul>
 
-                <p><strong>3. Порядок получения разрешения.</strong> Для получения разрешения необходимо направить письменный запрос автору по контактным данным, указанным в репозитории. Автор оставляет за собой право отказать в предоставлении разрешения без объяснения причин.</p>
+                <h4>3. НАРУШЕНИЕ</h4>
+                <p>При нарушении лицензии автор оставляет за собой право на судебное преследование в соответствии с законодательством РФ и международными нормами.</p>
 
-                <p><strong>4. Интеллектуальная собственность Valve.</strong> Все торговые марки, персонажи, названия, логотипы и элементы вселенной Portal являются собственностью Valve Corporation. Их использование в данном проекте осуществляется в рамках фанатского творчества и не претендует на права собственности.</p>
-
-                <p><strong>5. Отсутствие гарантий.</strong> Проект предоставляется «как есть». Автор не гарантирует корректную работу, отсутствие ошибок или соответствие каким-либо требованиям.</p>
-
-                <p><strong>6. Ответственность.</strong> Автор не несёт ответственности за любой ущерб, причинённый использованием данного проекта.</p>
+                <h4>4. КОНТАКТЫ</h4>
+                <p>По вопросам лицензирования: <a href="mailto:gffrgogle.com@gmail.com">gffrgogle.com@gmail.com</a></p>
 
                 <hr>
 
-                <h4>English</h4>
-                <p><strong>Portal 3: Fan Edition</strong></p>
-                <p>Copyright © 2026 GFFRGOOGLE. All rights reserved.</p>
+                <h4>Условия использования</h4>
+                <p><strong>1. Все права сохраняются.</strong> Автор сохраняет за собой все права на данное программное обеспечение, исходный код, дизайн, графические материалы, звуки, тексты и любые другие компоненты проекта.</p>
 
-                <p><strong>1. All rights reserved.</strong> The author retains all rights to this software, source code, design, graphics, sounds, texts, and any other project components.</p>
+                <p><strong>2. Порядок получения разрешения.</strong> Для получения разрешения необходимо направить письменный запрос автору по контактным данным, указанным в репозитории. Автор оставляет за собой право отказать в предоставлении разрешения без объяснения причин.</p>
 
-                <p><strong>2. Written permission required.</strong> Any use, copying, modification, distribution, publication, sublicensing, merging with other projects, commercial or non-commercial use of this code and materials is <strong>strictly prohibited without prior written permission from the author</strong>.</p>
+                <p><strong>3. Интеллектуальная собственность Valve.</strong> Все торговые марки, персонажи, названия, логотипы и элементы вселенной Portal являются собственностью Valve Corporation. Их использование в данном проекте осуществляется в рамках фанатского творчества и не претендует на права собственности.</p>
 
-                <p><strong>3. Permission procedure.</strong> To obtain permission, a written request must be sent to the author using the contact details provided in the repository. The author reserves the right to deny permission without explanation.</p>
-
-                <p><strong>4. Valve intellectual property.</strong> All trademarks, characters, names, logos, and elements of the Portal universe are the property of Valve Corporation. Their use in this project is within the scope of fan creativity and does not claim ownership.</p>
-
-                <p><strong>5. No warranties.</strong> The project is provided "as is". The author does not guarantee correct operation, absence of errors, or compliance with any requirements.</p>
-
-                <p><strong>6. Liability.</strong> The author is not liable for any damage caused by the use of this project.</p>
+                <p><strong>4. Ответственность.</strong> Автор не несёт ответственности за любой ущерб, причинённый использованием данного проекта.</p>
             </div>
             <div class="modal-footer">
-                <button onclick="closeModal('license')">Понятно / OK</button>
+                <button onclick="closeModal('license')">Понятно</button>
             </div>
         </div>
     </div>
 
-    <!-- МОДАЛКА: ОТКАЗ -->
+    <!-- МОДАЛКА: ОТКАЗ ОТ ОТВЕТСТВЕННОСТИ -->
     <div class="modal-overlay" id="modal-disclaimer">
         <div class="modal">
             <div class="modal-header">
@@ -275,15 +411,20 @@
                 <button class="modal-close" onclick="closeModal('disclaimer')">×</button>
             </div>
             <div class="modal-body">
-                <h4>Русский</h4>
+                <p><strong>Portal 3: Fan Edition</strong></p>
+                <p>Copyright © 2026 GFFRGOOGLE. Все права защищены.</p>
 
-                <p><strong>1. Неофициальный статус.</strong> «Portal 3: Fan Edition» — это фанатский проект, не имеющий никакого отношения к Valve Corporation. Valve не участвовала в создании, не одобряла и не спонсировала данный проект.</p>
+                <h4>1. Неофициальный статус</h4>
+                <p>«Portal 3: Fan Edition» — это фанатский проект, не имеющий никакого отношения к Valve Corporation. Valve не участвовала в создании, не одобряла и не спонсировала данный проект.</p>
 
-                <p><strong>2. Интеллектуальная собственность.</strong> Все торговые марки, персонажи, названия, логотипы и элементы вселенной Portal являются собственностью Valve Corporation. Их использование в данном проекте осуществляется в рамках фанатского творчества и не претендует на права собственности.</p>
+                <h4>2. Интеллектуальная собственность</h4>
+                <p>Все торговые марки, персонажи, названия, логотипы и элементы вселенной Portal являются собственностью Valve Corporation. Их использование в данном проекте осуществляется в рамках фанатского творчества и не претендует на права собственности.</p>
 
-                <p><strong>3. Отсутствие гарантий.</strong> Проект предоставляется «как есть» (as is). Авторы не гарантируют корректную работу на всех устройствах, отсутствие ошибок, багов, вылетов или потери данных.</p>
+                <h4>3. Отсутствие гарантий</h4>
+                <p>Проект предоставляется «как есть» (as is). Авторы не гарантируют корректную работу на всех устройствах, отсутствие ошибок, багов, вылетов или потери данных.</p>
 
-                <p><strong>4. Риски использования.</strong> Пользователь использует данный проект на свой страх и риск. Авторы не несут ответственности за:</p>
+                <h4>4. Риски использования</h4>
+                <p>Пользователь использует данный проект на свой страх и риск. Авторы не несут ответственности за:</p>
                 <ul>
                     <li>любой ущерб, причинённый устройству или данным;</li>
                     <li>проблемы, связанные с совместимостью;</li>
@@ -291,38 +432,17 @@
                     <li>любые косвенные, случайные или штрафные убытки.</li>
                 </ul>
 
-                <p><strong>5. Возрастные ограничения.</strong> Проект может содержать контент, не рекомендованный для лиц младше определённого возраста. Родители несут ответственность за контроль использования несовершеннолетними.</p>
+                <h4>5. Возрастные ограничения</h4>
+                <p>Проект может содержать контент, не рекомендованный для лиц младше определённого возраста. Родители несут ответственность за контроль использования несовершеннолетними.</p>
 
-                <p><strong>6. Изменения.</strong> Авторы оставляют за собой право в любое время изменить, приостановить или прекратить поддержку проекта без предварительного уведомления.</p>
+                <h4>6. Изменения</h4>
+                <p>Авторы оставляют за собой право в любое время изменить, приостановить или прекратить поддержку проекта без предварительного уведомления.</p>
 
-                <p><strong>7. Контакт.</strong> По всем вопросам: <a href="support.html">страница поддержки</a></p>
-
-                <hr>
-
-                <h4>English</h4>
-
-                <p><strong>1. Unofficial status.</strong> "Portal 3: Fan Edition" is a fan project with no affiliation to Valve Corporation. Valve was not involved in the creation, endorsement, or sponsorship of this project.</p>
-
-                <p><strong>2. Intellectual property.</strong> All trademarks, characters, names, logos, and elements of the Portal universe are the property of Valve Corporation. Their use in this project is within the scope of fan creativity and does not claim ownership.</p>
-
-                <p><strong>3. No warranties.</strong> The project is provided "as is". The authors do not guarantee correct operation on all devices, absence of errors, bugs, crashes, or data loss.</p>
-
-                <p><strong>4. Usage risks.</strong> The user uses this project at their own risk. The authors are not liable for:</p>
-                <ul>
-                    <li>any damage caused to the device or data;</li>
-                    <li>compatibility issues;</li>
-                    <li>actions of third parties;</li>
-                    <li>any indirect, incidental, or punitive damages.</li>
-                </ul>
-
-                <p><strong>5. Age restrictions.</strong> The project may contain content not recommended for persons below a certain age. Parents are responsible for monitoring use by minors.</p>
-
-                <p><strong>6. Changes.</strong> The authors reserve the right to change, suspend, or discontinue project support at any time without prior notice.</p>
-
-                <p><strong>7. Contact.</strong> For all inquiries: <a href="support.html">support page</a></p>
+                <h4>7. Контакт</h4>
+                <p>По всем вопросам: <a href="support.html">страница поддержки</a> или <a href="mailto:gffrgogle.com@gmail.com">gffrgogle.com@gmail.com</a></p>
             </div>
             <div class="modal-footer">
-                <button onclick="closeModal('disclaimer')">Понятно / OK</button>
+                <button onclick="closeModal('disclaimer')">Понятно</button>
             </div>
         </div>
     </div>
