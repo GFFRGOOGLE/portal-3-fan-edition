@@ -1,35 +1,8 @@
 // ============================================================
-// ЗАЩИТА ОТ ПРОСМОТРА И КОПИРОВАНИЯ КОДА
+// ЗАЩИТА ОТ КОПИРОВАНИЯ КОДА
 // ============================================================
 (function protectCode() {
     'use strict';
-    
-    // Блокировка прямого доступа к файлам
-    const blockedExtensions = ['.js', '.css', '.html', '.htm', '.txt', '.json', '.xml'];
-    const currentUrl = window.location.href.toLowerCase();
-    
-    for (let ext of blockedExtensions) {
-        if (currentUrl.endsWith(ext)) {
-            document.documentElement.innerHTML = `
-                <head><meta charset="UTF-8"><title>🚫 Доступ запрещён</title></head>
-                <body style="background:#0b0e14;color:#f5a623;text-align:center;padding-top:20%;font-family:sans-serif;">
-                    <h1>🚫 Доступ запрещён</h1>
-                    <p>Прямой доступ к файлам запрещён</p>
-                    <p style="color:#666;font-size:0.9rem;margin-top:20px;">Portal 3: Fan Edition © 2026</p>
-                </body>
-            `;
-            throw new Error('Direct file access blocked');
-        }
-    }
-
-    // Блокировка DevTools (только на десктопе)
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'F12') { e.preventDefault(); return false; }
-        if ((e.ctrlKey || e.metaKey) && e.key === 'u') { e.preventDefault(); return false; }
-        if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i','j','c','k'].includes(e.key.toLowerCase())) { 
-            e.preventDefault(); return false; 
-        }
-    });
 
     // Блокировка правого клика
     document.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
@@ -39,43 +12,6 @@
     document.addEventListener('copy', e => { e.preventDefault(); return false; });
     document.addEventListener('cut', e => { e.preventDefault(); return false; });
 
-    // Обнаружение DevTools — ТОЛЬКО НА ДЕСКТОПЕ
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (!isMobile) {
-        let devtoolsOpen = false;
-        const threshold = 160;
-        setInterval(() => {
-            const widthDiff = window.outerWidth - window.innerWidth;
-            const heightDiff = window.outerHeight - window.innerHeight;
-            if ((widthDiff > threshold || heightDiff > threshold) && !devtoolsOpen) {
-                devtoolsOpen = true;
-                document.body.innerHTML = `
-                    <div style="background:#0b0e14;color:#f5a623;text-align:center;padding-top:20%;height:100vh;font-family:sans-serif;">
-                        <h1>🚫 DevTools обнаружены</h1>
-                        <p>Доступ к сайту заблокирован</p>
-                    </div>
-                `;
-            }
-        }, 500);
-    }
-
-    // Защита от iframe — ИСПРАВЛЕНО: не ломает переходы с других сайтов
-    if (window.top !== window.self) {
-        try {
-            if (window.parent.location.hostname !== window.location.hostname) {
-                window.top.location = window.self.location;
-            }
-        } catch (e) {
-            window.top.location = window.self.location;
-        }
-    }
-
-    // Anti-debugger — только на десктопе
-    if (!isMobile) {
-        setInterval(() => { debugger; }, 100);
-    }
-    
     // Console warning
     console.log('%c🚫', 'font-size:50px');
     console.log('%cЭтот сайт защищён. Копирование кода запрещено.', 'color:#f5a623;font-size:14px');
@@ -86,7 +22,6 @@
 // 1. КАПЧА ПРИ ЗАХОДЕ НА САЙТ (не показывается при перезагрузке)
 // ============================================================
 (function() {
-    // localStorage вместо sessionStorage — сохраняется при перезагрузке и переходе с других сайтов
     if (localStorage.getItem('captchaPassed') === 'true') return;
 
     const ALLOWED_AGENTS = [
