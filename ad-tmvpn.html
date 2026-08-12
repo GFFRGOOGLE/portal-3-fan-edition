@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TM VPN — Обход блокировок</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a1a;
+            color: #e0e0ff;
+            min-height: 100vh;
+            position: relative;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 80px 20px 40px; }
+        
+        /* Крестик закрытия */
+        .close-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .close-btn:hover {
+            background: rgba(255,102,0,0.3);
+            border-color: #ff6600;
+            transform: scale(1.1);
+        }
+        .close-btn.visible { display: flex; }
+        
+        /* Круглый таймер */
+        .timer-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            z-index: 999;
+        }
+        .timer-circle {
+            width: 50px;
+            height: 50px;
+            transform: rotate(-90deg);
+        }
+        .timer-circle-bg {
+            fill: none;
+            stroke: rgba(255,255,255,0.15);
+            stroke-width: 4;
+        }
+        .timer-circle-progress {
+            fill: none;
+            stroke: #ff6600;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 138.23;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px; left: 50%;
+            transform: translateX(-50%);
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255,102,0,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-content { position: relative; z-index: 1; }
+        .logo-icon {
+            width: 100px; height: 100px;
+            background: linear-gradient(135deg, #ff6600, #ff8c00);
+            border-radius: 28px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 48px;
+            margin: 0 auto 24px;
+            box-shadow: 0 8px 30px rgba(255,102,0,0.4);
+        }
+        .hero h1 { color: #fff; font-size: 42px; margin-bottom: 12px; }
+        .hero .subtitle { color: #ff8c00; font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+        .hero .partner { color: #666688; font-size: 14px; }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 40px 0;
+        }
+        .feature-card {
+            background: rgba(255,102,0,0.08);
+            border: 1px solid rgba(255,102,0,0.2);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            background: rgba(255,102,0,0.15);
+            transform: translateY(-4px);
+            border-color: rgba(255,102,0,0.4);
+        }
+        .feature-icon { font-size: 36px; margin-bottom: 12px; }
+        .feature-card h3 { color: #fff; font-size: 16px; margin-bottom: 8px; }
+        .feature-card p { color: #8888aa; font-size: 13px; line-height: 1.5; }
+        
+        .cta {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(255,102,0,0.2);
+        }
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6600, #ff8c00);
+            color: #fff;
+            padding: 10px 28px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 24px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6600, #ff8c00);
+            color: #fff;
+            text-decoration: none;
+            padding: 18px 60px;
+            border-radius: 16px;
+            font-weight: bold;
+            font-size: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 6px 25px rgba(255,102,0,0.35);
+            transition: all 0.3s;
+        }
+        .btn-primary:hover { transform: scale(1.05); }
+        .footer-note { color: #555577; margin-top: 20px; font-size: 13px; }
+        
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 28px; }
+            .btn-primary { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Круглый таймер -->
+    <div class="timer-container" id="timerContainer">
+        <svg class="timer-circle" viewBox="0 0 50 50">
+            <circle class="timer-circle-bg" cx="25" cy="25" r="22"></circle>
+            <circle class="timer-circle-progress" id="timerProgress" cx="25" cy="25" r="22"></circle>
+        </svg>
+        <div class="timer-text" id="timerText">10</div>
+    </div>
+    
+    <!-- Крестик закрытия (появится после таймера) -->
+    <a href="index.html" class="close-btn" id="closeBtn">✕</a>
+    
+    <div class="container">
+        <div class="hero">
+            <div class="hero-content">
+                <div class="logo-icon">🛡️</div>
+                <h1>TM VPN</h1>
+                <p class="subtitle">Обходи блокировки • Антиглушилки • 10+ стран</p>
+                <p class="partner">Рекомендуемый партнёр проекта Portal 3: Fan Edition</p>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3>10+ серверов</h3>
+                <p>Швейцария, Турция, Польша, Казахстан, Саудовская Аравия, Швеция</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>Максимальная скорость</h3>
+                <p>Протоколы VLESS, XHTTP, REALITY, TROJAN, GRPC, TLS</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔓</div>
+                <h3>Антиглушилки</h3>
+                <p>Специальные серверы для обхода любых блокировок связи</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎁</div>
+                <h3>Розыгрыш призов</h3>
+                <p>Выиграй iPhone 17 Pro или одну из 2 PlayStation 5</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Партнёрка до 40%</h3>
+                <p>Стань партнёром и зарабатывай на рекомендациях</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⏱️</div>
+                <h3>3 дня бесплатно</h3>
+                <p>Пробный период для всех новых пользователей</p>
+            </div>
+        </div>
+        
+        <div class="cta">
+            <div class="badge">🎉 3 дня бесплатно для всех новых пользователей!</div>
+            <div>
+                <a href="https://t.me/the_Tm_vpnbot?start=REF8967927362" target="_blank" class="btn-primary">
+                    <span>📲</span> Подключить VPN
+                </a>
+            </div>
+            <p class="footer-note">Партнёрская программа: зарабатывай до 40%</p>
+        </div>
+    </div>
+    
+    <script>
+        // === НАСТРОЙКИ ТАЙМЕРА ===
+        const TOTAL_TIME = 10; // Измени это число для другого времени (в секундах)
+        // =========================
+        
+        const timerText = document.getElementById('timerText');
+        const timerProgress = document.getElementById('timerProgress');
+        const timerContainer = document.getElementById('timerContainer');
+        const closeBtn = document.getElementById('closeBtn');
+        
+        // Длина окружности круга: 2 * π * 22 ≈ 138.23
+        const circumference = 2 * Math.PI * 22;
+        timerProgress.style.strokeDasharray = circumference;
+        
+        let timeLeft = TOTAL_TIME;
+        
+        function updateTimer() {
+            timerText.textContent = timeLeft;
+            const offset = circumference - (timeLeft / TOTAL_TIME) * circumference;
+            timerProgress.style.strokeDashoffset = offset;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerContainer.style.display = 'none';
+                closeBtn.classList.add('visible');
+            }
+            timeLeft--;
+        }
+        
+        updateTimer();
+        const timerInterval = setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
