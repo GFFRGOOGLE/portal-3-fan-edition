@@ -22,7 +22,7 @@
         }
     }
 
-    // Блокировка DevTools
+    // Блокировка DevTools (только на десктопе)
     document.addEventListener('keydown', function(e) {
         if (e.key === 'F12') { e.preventDefault(); return false; }
         if ((e.ctrlKey || e.metaKey) && e.key === 'u') { e.preventDefault(); return false; }
@@ -39,28 +39,42 @@
     document.addEventListener('copy', e => { e.preventDefault(); return false; });
     document.addEventListener('cut', e => { e.preventDefault(); return false; });
 
-    // Обнаружение DevTools
-    let devtoolsOpen = false;
-    const threshold = 160;
-    setInterval(() => {
-        const widthDiff = window.outerWidth - window.innerWidth;
-        const heightDiff = window.outerHeight - window.innerHeight;
-        if ((widthDiff > threshold || heightDiff > threshold) && !devtoolsOpen) {
-            devtoolsOpen = true;
-            document.body.innerHTML = `
-                <div style="background:#0b0e14;color:#f5a623;text-align:center;padding-top:20%;height:100vh;font-family:sans-serif;">
-                    <h1>🚫 DevTools обнаружены</h1>
-                    <p>Доступ к сайту заблокирован</p>
-                </div>
-            `;
+    // Обнаружение DevTools — ТОЛЬКО НА ДЕСКТОПЕ
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (!isMobile) {
+        let devtoolsOpen = false;
+        const threshold = 160;
+        setInterval(() => {
+            const widthDiff = window.outerWidth - window.innerWidth;
+            const heightDiff = window.outerHeight - window.innerHeight;
+            if ((widthDiff > threshold || heightDiff > threshold) && !devtoolsOpen) {
+                devtoolsOpen = true;
+                document.body.innerHTML = `
+                    <div style="background:#0b0e14;color:#f5a623;text-align:center;padding-top:20%;height:100vh;font-family:sans-serif;">
+                        <h1>🚫 DevTools обнаружены</h1>
+                        <p>Доступ к сайту заблокирован</p>
+                    </div>
+                `;
+            }
+        }, 500);
+    }
+
+    // Защита от iframe — ИСПРАВЛЕНО: не ломает переходы с других сайтов
+    if (window.top !== window.self) {
+        try {
+            if (window.parent.location.hostname !== window.location.hostname) {
+                window.top.location = window.self.location;
+            }
+        } catch (e) {
+            window.top.location = window.self.location;
         }
-    }, 500);
+    }
 
-    // Защита от iframe
-    if (window.top !== window.self) window.top.location = window.self.location;
-
-    // Anti-debugger
-    setInterval(() => { debugger; }, 100);
+    // Anti-debugger — только на десктопе
+    if (!isMobile) {
+        setInterval(() => { debugger; }, 100);
+    }
     
     // Console warning
     console.log('%c🚫', 'font-size:50px');
@@ -69,10 +83,11 @@
 })();
 
 // ============================================================
-// 1. КАПЧА ПРИ ЗАХОДЕ НА САЙТ
+// 1. КАПЧА ПРИ ЗАХОДЕ НА САЙТ (не показывается при перезагрузке)
 // ============================================================
 (function() {
-    if (sessionStorage.getItem('captchaPassed') === 'true') return;
+    // localStorage вместо sessionStorage — сохраняется при перезагрузке и переходе с других сайтов
+    if (localStorage.getItem('captchaPassed') === 'true') return;
 
     const ALLOWED_AGENTS = [
         'Googlebot','Google-Extended','Bingbot','Slurp','DuckDuckBot',
@@ -172,7 +187,7 @@
         const userAnswer = parseInt(mathInput.value);
         if (isNaN(userAnswer)) { errorEl.textContent = '❌ Введите число'; return; }
         if (userAnswer !== mathCorrect) { errorEl.textContent = '❌ Неверно, попробуйте снова'; refreshMath(); return; }
-        sessionStorage.setItem('captchaPassed', 'true');
+        localStorage.setItem('captchaPassed', 'true');
         overlay.style.opacity = '0';
         setTimeout(() => overlay.remove(), 500);
     }
