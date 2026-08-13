@@ -302,13 +302,12 @@
         }
         .auth-error.active { display: block; }
     </style>
-    <script>
+<script>
 (function() {
-    // Проверяем, что это не play.html, index.html и не сама реклама
     const currentPage = window.location.pathname.split('/').pop();
-    if (currentPage === 'play.html' || currentPage === 'index.html' || currentPage === 'ad-tmvpn.html') return;
+    const excludedPages = ['play.html', 'index.html', 'ad-tmvpn.html', 'support-chat.html'];
+    if (excludedPages.includes(currentPage)) return;
     
-    // Открываем рекламу при любом клике по ссылке
     document.addEventListener('click', function(e) {
         const target = e.target.closest('a');
         if (!target) return;
@@ -316,12 +315,16 @@
         const href = target.getAttribute('href');
         if (!href) return;
         
-        // Не перехватываем play.html, index.html и внешние ссылки
-        if (href.includes('play.html') || href.includes('index.html') || href.startsWith('http')) return;
+        if (href.includes('play.html') || 
+            href.includes('index.html') || 
+            href.includes('support-chat.html') ||
+            href.startsWith('http') || 
+            href.includes('ad-tmvpn.html')) return;
         
         e.preventDefault();
-        window.open('ad-tmvpn.html', '_blank');
-        // Также открываем исходную ссылку
+        sessionStorage.setItem('tmVpnSourcePage', window.location.href);
+        const adUrl = 'ad-tmvpn.html?from=' + encodeURIComponent(window.location.href);
+        window.open(adUrl, '_blank');
         window.location.href = href;
     });
 })();
