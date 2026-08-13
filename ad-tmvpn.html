@@ -179,8 +179,8 @@
         <div class="timer-text" id="timerText">10</div>
     </div>
     
-    <!-- Крестик закрытия (возвращает назад, а не на index.html) -->
-    <div class="close-btn" id="closeBtn" onclick="history.back()">✕</div>
+    <!-- Крестик закрытия (оба способа + fallback) -->
+    <div class="close-btn" id="closeBtn" onclick="goBack()">✕</div>
     
     <div class="container">
         <div class="hero">
@@ -266,6 +266,30 @@
         
         updateTimer();
         const timerInterval = setInterval(updateTimer, 1000);
+        
+        // === ОБА СПОСОБА ВОЗВРАТА + FALLBACK ===
+        function goBack() {
+            let sourcePage = null;
+            
+            // Способ 1: Читаем из URL-параметра ?from=
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromParam = urlParams.get('from');
+            if (fromParam) {
+                sourcePage = decodeURIComponent(fromParam);
+            }
+            
+            // Способ 2: Если в URL нет — читаем из sessionStorage
+            if (!sourcePage) {
+                sourcePage = sessionStorage.getItem('tmVpnSourcePage');
+            }
+            
+            // Fallback: Если ничего не нашли — закрываем вкладку
+            if (sourcePage) {
+                window.location.href = sourcePage;
+            } else {
+                window.close();
+            }
+        }
     </script>
 </body>
 </html>
