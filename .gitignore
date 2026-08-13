@@ -1,0 +1,17 @@
+# Секреты
+.env
+
+# База данных (JSON)
+data/
+*.json
+
+# Зависимости
+node_modules/
+
+# Логи
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
