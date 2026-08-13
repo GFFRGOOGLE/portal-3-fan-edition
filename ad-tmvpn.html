@@ -176,10 +176,10 @@
             <circle class="timer-circle-bg" cx="25" cy="25" r="22"></circle>
             <circle class="timer-circle-progress" id="timerProgress" cx="25" cy="25" r="22"></circle>
         </svg>
-        <div class="timer-text" id="timerText">10</div>
+        <div class="timer-text" id="timerText">6</div>
     </div>
     
-    <!-- Крестик закрытия (оба способа + fallback) -->
+    <!-- Крестик закрытия -->
     <div class="close-btn" id="closeBtn" onclick="goBack()">✕</div>
     
     <div class="container">
@@ -238,7 +238,7 @@
     
     <script>
         // === НАСТРОЙКИ ТАЙМЕРА ===
-        const TOTAL_TIME = 10;
+        const TOTAL_TIME = 6; // 6 секунд
         // =========================
         
         const timerText = document.getElementById('timerText');
@@ -267,7 +267,7 @@
         updateTimer();
         const timerInterval = setInterval(updateTimer, 1000);
         
-        // === ОБА СПОСОБА ВОЗВРАТА + FALLBACK ===
+        // === ВОЗВРАТ НАЗАД (работает везде, включая Telegram) ===
         function goBack() {
             let sourcePage = null;
             
@@ -278,17 +278,19 @@
                 sourcePage = decodeURIComponent(fromParam);
             }
             
-            // Способ 2: Если в URL нет — читаем из sessionStorage
+            // Способ 2: Читаем из sessionStorage
             if (!sourcePage) {
                 sourcePage = sessionStorage.getItem('tmVpnSourcePage');
             }
             
-            // Fallback: Если ничего не нашли — закрываем вкладку
-            if (sourcePage) {
-                window.location.href = sourcePage;
-            } else {
-                window.close();
+            // Способ 3: Telegram WebView — пробуем history.back()
+            if (!sourcePage) {
+                history.back();
+                return;
             }
+            
+            // Переходим на исходную страницу
+            window.location.href = sourcePage;
         }
     </script>
 </body>
