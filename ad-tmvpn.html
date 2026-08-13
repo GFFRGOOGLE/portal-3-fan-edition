@@ -238,7 +238,7 @@
     
     <script>
         // === НАСТРОЙКИ ТАЙМЕРА ===
-        const TOTAL_TIME = 6; // 6 секунд
+        const TOTAL_TIME = 6;
         // =========================
         
         const timerText = document.getElementById('timerText');
@@ -267,29 +267,33 @@
         updateTimer();
         const timerInterval = setInterval(updateTimer, 1000);
         
-        // === ВОЗВРАТ НАЗАД (работает везде, включая Telegram) ===
+        // === ВОЗВРАТ НАЗАД ===
         function goBack() {
             let sourcePage = null;
             
-            // Способ 1: Читаем из URL-параметра ?from=
+            // Способ 1: URL-параметр ?from=
             const urlParams = new URLSearchParams(window.location.search);
             const fromParam = urlParams.get('from');
             if (fromParam) {
                 sourcePage = decodeURIComponent(fromParam);
             }
             
-            // Способ 2: Читаем из sessionStorage
+            // Способ 2: sessionStorage (прямой переход)
             if (!sourcePage) {
                 sourcePage = sessionStorage.getItem('tmVpnSourcePage');
             }
             
-            // Способ 3: Telegram WebView — пробуем history.back()
+            // Способ 3: последняя посещённая страница
             if (!sourcePage) {
-                history.back();
-                return;
+                sourcePage = sessionStorage.getItem('tmVpnLastPage');
             }
             
-            // Переходим на исходную страницу
+            // Способ 4: fallback на index.html
+            if (!sourcePage) {
+                sourcePage = 'index.html';
+            }
+            
+            // Переходим
             window.location.href = sourcePage;
         }
     </script>
